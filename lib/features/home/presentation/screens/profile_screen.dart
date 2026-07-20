@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'notifications_screen.dart';
+import 'crop_management_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -44,7 +46,12 @@ class ProfileScreen extends StatelessWidget {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.notifications_none, color: Color(0xFF333333), size: 26),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+                            );
+                          },
                         ),
                         Positioned(
                           top: 4,
@@ -322,6 +329,12 @@ class ProfileScreen extends StatelessWidget {
                       title: 'My Crops',
                       subtitle: 'Manage your crops and inventory',
                       suffixText: '5 Crops',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const CropManagementScreen()),
+                        );
+                      },
                     ),
                     const Divider(height: 1, color: Color(0xFFF1F1EF)),
                     _buildSettingsRow(
@@ -443,32 +456,37 @@ class ProfileScreen extends StatelessWidget {
     required String subtitle,
     Widget? suffixWidget,
     String? suffixText,
+    VoidCallback? onTap,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          Icon(icon, color: const Color(0xFF2E7D32), size: 20),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
-                const SizedBox(height: 2),
-                Text(subtitle, style: const TextStyle(fontSize: 10, color: Color(0xFF888888), fontWeight: FontWeight.w500)),
-              ],
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Icon(icon, color: const Color(0xFF2E7D32), size: 20),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                  const SizedBox(height: 2),
+                  Text(subtitle, style: const TextStyle(fontSize: 10, color: Color(0xFF888888), fontWeight: FontWeight.w500)),
+                ],
+              ),
             ),
-          ),
-          if (suffixWidget != null) ...[
-            suffixWidget,
-            const SizedBox(width: 8),
-          ] else if (suffixText != null) ...[
-            Text(suffixText, style: const TextStyle(color: Color(0xFF999999), fontSize: 10, fontWeight: FontWeight.bold)),
-            const SizedBox(width: 8),
+            if (suffixWidget != null) ...[
+              suffixWidget,
+              const SizedBox(width: 8),
+            ] else if (suffixText != null) ...[
+              Text(suffixText, style: const TextStyle(color: Color(0xFF999999), fontSize: 10, fontWeight: FontWeight.bold)),
+              const SizedBox(width: 8),
+            ],
+            const Icon(Icons.chevron_right, color: Color(0xFFCCCCCC), size: 18),
           ],
-          const Icon(Icons.chevron_right, color: Color(0xFFCCCCCC), size: 18),
-        ],
+        ),
       ),
     );
   }

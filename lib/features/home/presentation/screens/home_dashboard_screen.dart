@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'notifications_screen.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
   final Function(int) onNavigateToTab;
@@ -97,7 +98,12 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.notifications_none, color: Color(0xFF333333), size: 28),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+                            );
+                          },
                         ),
                         Positioned(
                           top: 4,
