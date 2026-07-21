@@ -9,339 +9,267 @@ class NotificationsScreen extends StatefulWidget {
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   String _selectedCategory = 'All';
-
-  final List<Map<String, dynamic>> _todayNotifications = [
-    {
-      'title': 'New Order Received',
-      'body': 'You have a new order for Maize (2,500 kg)',
-      'orderNo': 'Order #FGT-4587',
-      'time': '9:30 AM',
-      'category': 'Orders',
-      'isRead': false,
-      'icon': Icons.shopping_bag_outlined,
-      'iconBg': const Color(0xFFE8F5E9),
-      'iconColor': const Color(0xFF2E7D32),
-    },
-    {
-      'title': 'Delivery In Transit',
-      'body': 'Your delivery of Rice (1,800 kg) is on the way',
-      'orderNo': 'Order #FGT-4583',
-      'time': '8:15 AM',
-      'category': 'Orders',
-      'isRead': false,
-      'icon': Icons.local_shipping_outlined,
-      'iconBg': const Color(0xFFE3F2FD),
-      'iconColor': const Color(0xFF1565C0),
-    },
-    {
-      'title': 'Payment Received',
-      'body': 'Payment of ₦864,000 has been received',
-      'orderNo': 'Order #FGT-4583',
-      'time': '7:45 AM',
-      'category': 'Payments',
-      'isRead': false,
-      'icon': Icons.monetization_on_outlined,
-      'iconBg': const Color(0xFFE8F5E9),
-      'iconColor': const Color(0xFF2E7D32),
-    },
-    {
-      'title': 'Order Pending Confirmation',
-      'body': 'Please confirm the availability of Groundnut (1,200 kg)',
-      'orderNo': 'Order #FGT-4586',
-      'time': '6:20 AM',
-      'category': 'Orders',
-      'isRead': false,
-      'icon': Icons.warning_amber_rounded,
-      'iconBg': const Color(0xFFFFF3E0),
-      'iconColor': const Color(0xFFE65100),
-    },
-  ];
-
-  final List<Map<String, dynamic>> _yesterdayNotifications = [
-    {
-      'title': 'New Promotion Available',
-      'body': 'Check out our latest promotion and boost your sales!',
-      'time': 'Yesterday, 10:00 PM',
-      'category': 'Promos',
-      'isRead': true,
-      'icon': Icons.campaign_outlined,
-      'iconBg': const Color(0xFFF3E5F5),
-      'iconColor': const Color(0xFF7B1FA2),
-    },
-    {
-      'title': 'New Review Received',
-      'body': 'ABC Agro Ltd gave you a 5-star review',
-      'actionText': 'View Review',
-      'time': 'Yesterday, 6:30 PM',
-      'category': 'System',
-      'isRead': true,
-      'icon': Icons.star_border,
-      'iconBg': const Color(0xFFFFF8E1),
-      'iconColor': const Color(0xFFFFB300),
-    },
-    {
-      'title': 'New Team Member',
-      'body': 'Hauwa Isah has been added to your team',
-      'time': 'Yesterday, 4:10 PM',
-      'category': 'System',
-      'isRead': true,
-      'icon': Icons.people_outline,
-      'iconBg': const Color(0xFFE0F2F1),
-      'iconColor': const Color(0xFF00796B),
-    },
-    {
-      'title': 'Account Verified',
-      'body': 'Congratulations! Your account has been verified',
-      'actionText': 'View Details',
-      'time': 'Yesterday, 2:20 PM',
-      'category': 'System',
-      'isRead': true,
-      'icon': Icons.verified_user_outlined,
-      'iconBg': const Color(0xFFE3F2FD),
-      'iconColor': const Color(0xFF1565C0),
-    },
-    {
-      'title': 'Welcome to FarmGate!',
-      'body': 'Thank you for joining us. Let\'s grow together!',
-      'time': 'Yesterday, 9:15 AM',
-      'category': 'System',
-      'isRead': true,
-      'icon': Icons.card_giftcard_outlined,
-      'iconBg': const Color(0xFFFCE4EC),
-      'iconColor': const Color(0xFFC2185B),
-    },
-  ];
-
-  void _markAllAsRead() {
-    setState(() {
-      for (var n in _todayNotifications) {
-        n['isRead'] = true;
-      }
-      for (var n in _yesterdayNotifications) {
-        n['isRead'] = true;
-      }
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('All notifications marked as read!'), backgroundColor: Color(0xFF2E7D32)),
-    );
-  }
-
-  List<Map<String, dynamic>> _filterList(List<Map<String, dynamic>> list) {
-    if (_selectedCategory == 'All') return list;
-    return list.where((n) => n['category'] == _selectedCategory).toList();
-  }
+  bool _showPushBanner = true;
 
   @override
   Widget build(BuildContext context) {
-    final todayList = _filterList(_todayNotifications);
-    final yesterdayList = _filterList(_yesterdayNotifications);
-
     return Scaffold(
       backgroundColor: const Color(0xFFFBFBF9),
       body: SafeArea(
         child: Column(
           children: [
-            // 1. Header
+            // 1. Header (Back Arrow, Title, Subtext, Notification Bell, Avatar)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  InkWell(
-                    onTap: () => Navigator.pop(context),
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFFE2E2DF)),
-                      ),
-                      child: const Icon(Icons.chevron_left, color: Color(0xFF333333)),
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Color(0xFF333333)),
+                    onPressed: () => Navigator.pop(context),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
+                  const Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           'Notifications',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
                         ),
                         SizedBox(height: 2),
                         Text(
-                          'Stay updated with your activity',
-                          style: TextStyle(fontSize: 10, color: Color(0xFF888888), fontWeight: FontWeight.w500),
+                          'Stay updated on your orders and account',
+                          style: TextStyle(fontSize: 11, color: Color(0xFF888888), fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),
                   ),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFE2E2DF)),
-                    ),
-                    child: const Icon(Icons.search, color: Color(0xFF666666), size: 20),
+                  Stack(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.notifications_none, color: Color(0xFF333333)),
+                        onPressed: () {},
+                      ),
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.orange,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Text(
+                            '3',
+                            style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFE2E2DF)),
-                    ),
-                    child: const Icon(Icons.tune, color: Color(0xFF666666), size: 20),
+                  const CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Color(0xFFE3F2FD),
+                    child: Text('👨🏾', style: TextStyle(fontSize: 16)),
                   ),
                 ],
               ),
             ),
 
-            // 2. Filter Category Chips
+            // 2. Filter Category Chips Scroll Row
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               child: Row(
                 children: [
-                  _buildCategoryChip('All', 12),
+                  _buildCategoryChip('All', null),
                   const SizedBox(width: 8),
-                  _buildCategoryChip('Orders', 5),
+                  _buildCategoryChip('Orders', Icons.inventory_2_outlined),
                   const SizedBox(width: 8),
-                  _buildCategoryChip('Payments', 3),
+                  _buildCategoryChip('Payments', Icons.credit_card_outlined),
                   const SizedBox(width: 8),
-                  _buildCategoryChip('System', 4),
+                  _buildCategoryChip('Promotions', Icons.card_giftcard_outlined),
                   const SizedBox(width: 8),
-                  _buildCategoryChip('Promos', 1),
+                  _buildCategoryChip('System', Icons.settings_outlined),
+                  const SizedBox(width: 8),
+                  // Tune adjustment icon
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: const Color(0xFFE2E2DF)),
+                    ),
+                    child: const Center(child: Icon(Icons.tune_outlined, color: Colors.grey, size: 16)),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
-            // 3. Scrollable List Grouped by Today / Yesterday
+            // 3. Scrollable List of Grouped Notifications
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
-                  // Today Section
-                  if (todayList.isNotEmpty) ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Today',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
-                        ),
-                        TextButton.icon(
-                          onPressed: _markAllAsRead,
-                          icon: const Icon(Icons.check_circle_outline, color: Color(0xFF2E7D32), size: 14),
-                          label: const Text(
-                            'Mark all as read',
-                            style: TextStyle(color: Color(0xFF2E7D32), fontSize: 10, fontWeight: FontWeight.bold),
-                          ),
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    ...todayList.map((n) => _buildNotificationCard(n)),
+                  // Push Banner
+                  if (_showPushBanner) ...[
+                    _buildPushNotificationBanner(),
                     const SizedBox(height: 20),
                   ],
 
-                  // Yesterday Section
-                  if (yesterdayList.isNotEmpty) ...[
-                    const Text(
-                      'Yesterday',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
-                    ),
-                    const SizedBox(height: 10),
-                    ...yesterdayList.map((n) => _buildNotificationCard(n)),
-                    const SizedBox(height: 16),
-                  ],
+                  // Today Section
+                  const Text('Today', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                  const SizedBox(height: 10),
+                  _buildNotificationTile(
+                    title: 'Order Delivered',
+                    body: 'Your order #ORD-2024-1057 (Rice 1,200 kg) has been delivered. Please confirm receipt.',
+                    time: '8:15 AM',
+                    icon: Icons.local_shipping_outlined,
+                    iconBg: const Color(0xFFFFF3E0),
+                    iconColor: Colors.orange,
+                    isUnread: true,
+                  ),
+                  _buildNotificationTile(
+                    title: 'Payment Successful',
+                    body: 'Your payment of ₦600,000 to Green Fields Ltd was successful.',
+                    time: '7:45 AM',
+                    icon: Icons.check,
+                    iconBg: const Color(0xFFE8F5E9),
+                    iconColor: const Color(0xFF2E7D32),
+                    isUnread: true,
+                  ),
+                  _buildNotificationTile(
+                    title: 'Order Confirmed by Supplier',
+                    body: 'ABC Farms has confirmed your order #ORD-2024-1056 (Maize 2,500 kg).',
+                    time: 'Yesterday, 4:30 PM',
+                    icon: Icons.assignment_outlined,
+                    iconBg: const Color(0xFFE3F2FD),
+                    iconColor: Colors.blue,
+                    isUnread: true,
+                  ),
+                  _buildNotificationTile(
+                    title: 'Order On The Way',
+                    body: 'Your order #ORD-2024-1056 (Maize 2,500 kg) is on the way and will arrive today by 4:30 PM.',
+                    time: 'Yesterday, 11:20 AM',
+                    icon: Icons.local_shipping_outlined,
+                    iconBg: const Color(0xFFFFF3E0),
+                    iconColor: Colors.orange,
+                    isUnread: true,
+                  ),
+                  const SizedBox(height: 20),
 
-                  // Bottom Promo Bell Banner
-                  _buildEnableNotificationsBanner(),
+                  // This Week Section
+                  const Text('This Week', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                  const SizedBox(height: 10),
+                  _buildNotificationTile(
+                    title: 'Refund Processed',
+                    body: 'Your refund of ₦120,000 has been processed successfully.',
+                    time: 'May 8, 2024',
+                    icon: Icons.account_balance_wallet_outlined,
+                    iconBg: const Color(0xFFEDE7F6),
+                    iconColor: Colors.purple,
+                    isUnread: true,
+                  ),
+                  _buildNotificationTile(
+                    title: 'Special Offer for Buyers',
+                    body: 'Get 5% off on your next order above ₦500,000. Valid till May 15, 2024.',
+                    time: 'May 7, 2024',
+                    icon: Icons.percent_outlined,
+                    iconBg: const Color(0xFFFFF3E0),
+                    iconColor: Colors.orange,
+                    isUnread: false,
+                  ),
+                  _buildNotificationTile(
+                    title: 'Security Alert',
+                    body: 'New login detected on your account from Chrome on Windows.',
+                    time: 'May 6, 2024',
+                    icon: Icons.security_outlined,
+                    iconBg: const Color(0xFFECEFF1),
+                    iconColor: Colors.blueGrey,
+                    isUnread: false,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Earlier Section
+                  const Text('Earlier', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                  const SizedBox(height: 10),
+                  _buildNotificationTile(
+                    title: 'Money Added',
+                    body: '₦500,000 was added to your wallet via GTBank.',
+                    time: 'May 5, 2024',
+                    icon: Icons.add_card_outlined,
+                    iconBg: const Color(0xFFE8F5E9),
+                    iconColor: const Color(0xFF2E7D32),
+                    isUnread: false,
+                  ),
+                  _buildNotificationTile(
+                    title: 'Order Placed',
+                    body: 'You placed a new order #ORD-2024-1055 (Tomato 800 kg).',
+                    time: 'May 4, 2024',
+                    icon: Icons.assignment_outlined,
+                    iconBg: const Color(0xFFE3F2FD),
+                    iconColor: Colors.blue,
+                    isUnread: false,
+                  ),
                   const SizedBox(height: 24),
+
+                  // Clear all notifications footer row
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFAF7F0),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFE2E2DF)),
+                    ),
+                    child: Row(
+                      children: const [
+                        Icon(Icons.delete_outline, color: Color(0xFF2E7D32), size: 18),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Clear all notifications',
+                            style: TextStyle(color: Color(0xFF2E7D32), fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Icon(Icons.chevron_right, color: Color(0xFF2E7D32), size: 16),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
                 ],
               ),
-            ),
+            )
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCategoryChip(String label, int count) {
+  Widget _buildCategoryChip(String label, IconData? icon) {
     bool isSelected = _selectedCategory == label;
-    Color bg;
-    Color textColor;
-    if (isSelected) {
-      bg = const Color(0xFF2E7D32);
-      textColor = Colors.white;
-    } else {
-      textColor = const Color(0xFF555555);
-      switch (label) {
-        case 'Orders':
-          bg = const Color(0xFFFFF3E0);
-          break;
-        case 'Payments':
-          bg = const Color(0xFFE3F2FD);
-          break;
-        case 'System':
-          bg = const Color(0xFFF1F1EF);
-          break;
-        case 'Promos':
-          bg = const Color(0xFFF3E5F5);
-          break;
-        default:
-          bg = Colors.white;
-      }
-    }
+    Color bg = isSelected ? const Color(0xFFE8F5E9) : Colors.white;
+    Color textCol = isSelected ? const Color(0xFF2E7D32) : Colors.grey;
+    Color borderCol = isSelected ? const Color(0xFF81C784) : const Color(0xFFE2E2DF);
 
     return GestureDetector(
       onTap: () => setState(() => _selectedCategory = label),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? const Color(0xFF2E7D32) : const Color(0xFFE2E2DF),
-          ),
+          border: Border.all(color: borderCol),
         ),
         child: Row(
           children: [
+            if (icon != null) ...[
+              Icon(icon, color: textCol, size: 13),
+              const SizedBox(width: 4),
+            ],
             Text(
               label,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
-            ),
-            const SizedBox(width: 6),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-              decoration: BoxDecoration(
-                color: isSelected ? Colors.white.withOpacity(0.2) : Colors.black.withOpacity(0.06),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                count.toString(),
-                style: TextStyle(
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                  color: isSelected ? Colors.white : const Color(0xFF555555),
-                ),
-              ),
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: textCol),
             ),
           ],
         ),
@@ -349,188 +277,130 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
-  Widget _buildNotificationCard(Map<String, dynamic> n) {
-    bool isRead = n['isRead'] as bool;
-
+  Widget _buildPushNotificationBanner() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE2E2DF)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Icon
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: n['iconBg'],
-                shape: BoxShape.circle,
-              ),
-              child: Icon(n['icon'], color: n['iconColor'], size: 20),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        n['title'],
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
-                      ),
-                      Text(
-                        n['time'],
-                        style: const TextStyle(fontSize: 9, color: Color(0xFF999999)),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    n['body'],
-                    style: const TextStyle(fontSize: 11, color: Color(0xFF666666), height: 1.3, fontWeight: FontWeight.w500),
-                  ),
-                  if (n['orderNo'] != null) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      n['orderNo'],
-                      style: const TextStyle(fontSize: 10, color: Color(0xFF999999), fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                  if (n['actionText'] != null) ...[
-                    const SizedBox(height: 8),
-                    InkWell(
-                      onTap: () {},
-                      child: Text(
-                        n['actionText'],
-                        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            // Unread / Read status dot
-            Center(
-              child: Container(
-                width: 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: isRead ? Colors.grey[300] : const Color(0xFF2E7D32),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEnableNotificationsBanner() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFDF9),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFFBEFD6)),
-      ),
-      child: Row(
+      child: Stack(
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Never Miss an Update!',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: const BoxDecoration(color: Color(0xFFE8F5E9), shape: BoxShape.circle),
+                child: const Center(child: Icon(Icons.notifications_active_outlined, color: Color(0xFF2E7D32), size: 18)),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Enable Push Notifications',
+                      style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Allow push notifications to get real-time updates about your orders and deliveries.',
+                      style: TextStyle(fontSize: 9, color: Colors.grey, height: 1.3),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Enable push notifications to stay updated on orders, payments and more.',
-                  style: TextStyle(fontSize: 10, color: Color(0xFF777777), height: 1.3, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(width: 12),
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2E7D32),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  elevation: 0,
                 ),
-                const SizedBox(height: 12),
-                ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.arrow_forward, size: 14),
-                  label: const Text('Enable Notifications', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2E7D32),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    elevation: 0,
-                  ),
-                ),
-              ],
-            ),
+                child: const Text('Enable', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold)),
+              )
+            ],
           ),
-          const SizedBox(width: 12),
-          // Custom painted notifications bell illustration
-          SizedBox(
-            width: 70,
-            height: 70,
-            child: CustomPaint(
-              painter: _BellIllustrationPainter(),
+          Positioned(
+            right: 0,
+            top: 0,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _showPushBanner = false;
+                });
+              },
+              child: const Icon(Icons.close, size: 14, color: Colors.grey),
             ),
-          ),
+          )
         ],
       ),
     );
   }
-}
 
-class _BellIllustrationPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-
-    // Green bell body
-    final bellPaint = Paint()
-      ..color = const Color(0xFF2E7D32)
-      ..style = PaintingStyle.fill;
-
-    final bellHangerPaint = Paint()
-      ..color = const Color(0xFF1B5E20)
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke;
-
-    // Hanger top loop
-    canvas.drawCircle(Offset(w * 0.5, h * 0.2), 6, bellHangerPaint);
-
-    // Bell dome
-    final path = Path()
-      ..moveTo(w * 0.35, h * 0.7)
-      ..cubicTo(w * 0.35, h * 0.3, w * 0.65, h * 0.3, w * 0.65, h * 0.7)
-      ..lineTo(w * 0.75, h * 0.75)
-      ..lineTo(w * 0.25, h * 0.75)
-      ..close();
-    canvas.drawPath(path, bellPaint);
-
-    // Bell clapper (bottom circle)
-    canvas.drawCircle(Offset(w * 0.5, h * 0.8), 5, Paint()..color = const Color(0xFF1B5E20));
-
-    // Notification badge overlay at top right of the bell
-    final badgePaint = Paint()..color = const Color(0xFFC62828)..style = PaintingStyle.fill;
-    canvas.drawCircle(Offset(w * 0.75, h * 0.28), 9, badgePaint);
-
-    final textSpan = const TextSpan(
-      text: '12',
-      style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+  Widget _buildNotificationTile({
+    required String title,
+    required String body,
+    required String time,
+    required IconData icon,
+    required Color iconBg,
+    required Color iconColor,
+    required bool isUnread,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E2DF)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
+            child: Center(child: Icon(icon, color: iconColor, size: 16)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(title, style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                    Text(time, style: const TextStyle(fontSize: 8.5, color: Colors.grey)),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  body,
+                  style: const TextStyle(fontSize: 9.8, color: Colors.grey, height: 1.3, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Center(
+            child: isUnread
+                ? Container(
+                    width: 6,
+                    height: 6,
+                    decoration: const BoxDecoration(color: Color(0xFF2E7D32), shape: BoxShape.circle),
+                  )
+                : const Icon(Icons.chevron_right, size: 14, color: Colors.grey),
+          )
+        ],
+      ),
     );
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr)..layout();
-    textPainter.paint(canvas, Offset(w * 0.75 - textPainter.width / 2, h * 0.28 - textPainter.height / 2));
   }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
