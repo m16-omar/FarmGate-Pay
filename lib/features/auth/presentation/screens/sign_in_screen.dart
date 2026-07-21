@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../main.dart';
 import '../../../onboarding/presentation/widgets/farmgate_logo.dart';
 import 'verification_screen.dart';
+import 'forgot_password_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -281,7 +282,12 @@ class _SignInScreenState extends State<SignInScreen> {
                     ],
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+                      );
+                    },
                     child: const Text(
                       'Forgot Password?',
                       style: TextStyle(
