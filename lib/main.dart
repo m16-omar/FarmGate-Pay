@@ -6,6 +6,10 @@ import 'features/home/presentation/screens/analytics_screen.dart';
 import 'features/home/presentation/screens/profile_screen.dart';
 import 'features/onboarding/presentation/screens/splash_screen.dart';
 
+class AppUserSession {
+  static String activeRole = 'Farmer'; // Default to Farmer
+}
+
 void main() {
   runApp(const FarmGatePayApp());
 }

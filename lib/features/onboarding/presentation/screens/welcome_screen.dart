@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/farmgate_logo.dart';
-import '../../../auth/presentation/screens/sign_in_screen.dart';
+import 'role_selection_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -21,7 +21,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   void _onGetStarted() {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const SignInScreen()),
+      MaterialPageRoute(builder: (context) => const RoleSelectionScreen()),
     );
   }
 

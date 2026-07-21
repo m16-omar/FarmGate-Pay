@@ -3,6 +3,8 @@ import '../../../../main.dart';
 import '../../../onboarding/presentation/widgets/farmgate_logo.dart';
 import 'verification_screen.dart';
 import 'forgot_password_screen.dart';
+import '../../../home/presentation/screens/buyer_tab_shell.dart';
+import '../../../home/presentation/screens/cooperative_tab_shell.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -25,8 +27,17 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _onSignIn() {
+    Widget nextScreen;
+    if (AppUserSession.activeRole == 'Buyer') {
+      nextScreen = const BuyerTabShell();
+    } else if (AppUserSession.activeRole == 'Cooperative') {
+      nextScreen = const CooperativeTabShell();
+    } else {
+      nextScreen = const MainTabShell();
+    }
+
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const MainTabShell()),
+      MaterialPageRoute(builder: (context) => nextScreen),
     );
   }
 
