@@ -47,10 +47,10 @@ class _MainTabShellState extends State<MainTabShell> {
     super.initState();
     _screens = [
       HomeDashboardScreen(onNavigateToTab: _onNavigateToTab),
-      const DeliveriesListScreen(),
-      const PaymentsDashboardScreen(),
-      const AnalyticsScreen(),
-      const ProfileScreen(),
+      DeliveriesListScreen(onBack: () => _onNavigateToTab(0)),
+      PaymentsDashboardScreen(onBack: () => _onNavigateToTab(0)),
+      AnalyticsScreen(onBack: () => _onNavigateToTab(0)),
+      ProfileScreen(onBack: () => _onNavigateToTab(0)),
     ];
   }
 

@@ -3,7 +3,8 @@ import 'notifications_screen.dart';
 import 'crop_management_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  final VoidCallback? onBack;
+  const ProfileScreen({super.key, this.onBack});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,13 @@ class ProfileScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        if (Navigator.canPop(context)) {
+                          Navigator.pop(context);
+                        } else if (onBack != null) {
+                          onBack!();
+                        }
+                      },
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
                         width: 40,

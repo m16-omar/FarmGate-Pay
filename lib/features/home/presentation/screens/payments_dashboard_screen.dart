@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class PaymentsDashboardScreen extends StatefulWidget {
-  const PaymentsDashboardScreen({super.key});
+  final VoidCallback? onBack;
+  const PaymentsDashboardScreen({super.key, this.onBack});
 
   @override
   State<PaymentsDashboardScreen> createState() => _PaymentsDashboardScreenState();
@@ -26,7 +27,13 @@ class _PaymentsDashboardScreenState extends State<PaymentsDashboardScreen> {
                 child: Row(
                   children: [
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        if (Navigator.canPop(context)) {
+                          Navigator.pop(context);
+                        } else if (widget.onBack != null) {
+                          widget.onBack!();
+                        }
+                      },
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
                         width: 40,

@@ -3,7 +3,8 @@ import 'delivery_details_screen.dart';
 import 'delivery_screen.dart';
 
 class DeliveriesListScreen extends StatefulWidget {
-  const DeliveriesListScreen({super.key});
+  final VoidCallback? onBack;
+  const DeliveriesListScreen({super.key, this.onBack});
 
   @override
   State<DeliveriesListScreen> createState() => _DeliveriesListScreenState();
@@ -133,7 +134,13 @@ class _DeliveriesListScreenState extends State<DeliveriesListScreen> {
                 children: [
                   // Optional back button
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      if (Navigator.canPop(context)) {
+                        Navigator.pop(context);
+                      } else if (widget.onBack != null) {
+                        widget.onBack!();
+                      }
+                    },
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
                       width: 40,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AnalyticsScreen extends StatefulWidget {
-  const AnalyticsScreen({super.key});
+  final VoidCallback? onBack;
+  const AnalyticsScreen({super.key, this.onBack});
 
   @override
   State<AnalyticsScreen> createState() => _AnalyticsScreenState();
@@ -25,7 +26,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 child: Row(
                   children: [
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        if (Navigator.canPop(context)) {
+                          Navigator.pop(context);
+                        } else if (widget.onBack != null) {
+                          widget.onBack!();
+                        }
+                      },
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
                         width: 40,
