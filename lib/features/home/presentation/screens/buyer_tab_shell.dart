@@ -172,7 +172,7 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
 
   void _showPurchaseOfferDialog(Map<String, dynamic> offer) {
     final qtyController = TextEditingController(text: offer['available'].toString());
-    double totalCost = offer['available'] * offer['price'];
+    double totalCost = ((offer['available'] as num).toDouble() * (offer['price'] as num).toDouble());
 
     showDialog(
       context: context,
@@ -202,7 +202,7 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
                 onChanged: (val) {
                   double qty = double.tryParse(val) ?? 0.0;
                   setDialogState(() {
-                    totalCost = qty * offer['price'];
+                    totalCost = qty * (offer['price'] as num).toDouble();
                   });
                 },
               ),
