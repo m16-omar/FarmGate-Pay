@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'notifications_screen.dart';
+import 'browse_crops_screen.dart';
 import '../../../onboarding/presentation/screens/welcome_screen.dart';
 import '../../../onboarding/presentation/screens/role_selection_screen.dart';
 
@@ -129,7 +130,15 @@ class _BuyerTabShellState extends State<BuyerTabShell> {
                   _buildDrawerItem(Icons.inventory_2_outlined, 'Orders', 1),
                   _buildDrawerItem(Icons.assignment_turned_in_outlined, 'Confirm Deliveries', 2),
                   _buildDrawerItem(Icons.account_balance_wallet_outlined, 'Wallet', 3),
-                  _buildDrawerItem(Icons.grass_outlined, 'Browse Crops', null, subtitle: 'Crops browse screen coming soon'),
+                  _buildDrawerItem(
+                    Icons.grass_outlined,
+                    'Browse Crops',
+                    null,
+                    onTap: () {
+                      Navigator.pop(context); // Close Drawer
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const BrowseCropsScreen()));
+                    },
+                  ),
                   _buildDrawerItem(Icons.people_outline, 'Suppliers', null, subtitle: 'Suppliers directory coming soon'),
                   _buildDrawerItem(
                     Icons.chat_bubble_outline,
@@ -764,9 +773,14 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
                     // 5. Frequently Purchased
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text('Frequently Purchased', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
-                        Text('Browse More >', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+                      children: [
+                        const Text('Frequently Purchased', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const BrowseCropsScreen()));
+                          },
+                          child: const Text('Browse More >', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 12),
@@ -1094,21 +1108,26 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
   }
 
   Widget _buildMoreItem() {
-    return Column(
-      children: [
-        Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFFE2E2DF), style: BorderStyle.solid),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const BrowseCropsScreen()));
+      },
+      child: Column(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFFE2E2DF), style: BorderStyle.solid),
+            ),
+            child: const Center(child: Icon(Icons.add, color: Colors.grey, size: 22)),
           ),
-          child: const Center(child: Icon(Icons.add, color: Colors.grey, size: 22)),
-        ),
-        const SizedBox(height: 6),
-        const Text('More', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: Colors.grey)),
-      ],
+          const SizedBox(height: 6),
+          const Text('More', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: Colors.grey)),
+        ],
+      ),
     );
   }
 
