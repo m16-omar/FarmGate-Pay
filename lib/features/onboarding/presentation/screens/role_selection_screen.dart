@@ -23,7 +23,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
     },
     {
       'id': 'Buyer',
-      'title': 'Buyer / Processor',
+      'title': 'Buyer',
       'subtitle': 'Fund escrow, purchase crops, confirm weight, and track logs.',
       'icon': Icons.business_center_outlined,
       'color': const Color(0xFF1565C0),
@@ -34,8 +34,8 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
       'title': 'Cooperative',
       'subtitle': 'Manage members, bulk aggregate deliveries, and view joint payout ledgers.',
       'icon': Icons.handshake_outlined,
-      'color': const Color(0xFF7B1FA2),
-      'bg': const Color(0xFFF3E5F5),
+      'color': const Color(0xFFE29A26),
+      'bg': const Color(0xFFFFF8E1),
     },
   ];
 
