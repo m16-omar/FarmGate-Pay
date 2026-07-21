@@ -33,9 +33,340 @@ class _BuyerTabShellState extends State<BuyerTabShell> {
     ];
   }
 
+  void _navigateToTab(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    Navigator.pop(context); // Close the drawer
+  }
+
+  Widget _buildAppDrawer(BuildContext context) {
+    return Drawer(
+      backgroundColor: const Color(0xFFFBFBF9),
+      width: MediaQuery.of(context).size.width * 0.85,
+      child: SafeArea(
+        child: Column(
+          children: [
+            // Drawer Header (Avatar, Name, Verified, Close Cross Button)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const CircleAvatar(
+                    radius: 32,
+                    backgroundColor: Color(0xFFC8E6C9),
+                    child: Text('👨🏾', style: TextStyle(fontSize: 34)),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Musa Abdullahi',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                        ),
+                        const SizedBox(height: 3),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE8F5E9),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Text(
+                            'Buyer',
+                            style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'musa.abdullahi@greenmart.com',
+                          style: TextStyle(fontSize: 9.5, color: Colors.grey, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: const [
+                            Icon(Icons.check_circle, size: 10, color: Color(0xFF2E7D32)),
+                            SizedBox(width: 4),
+                            Text('Verified Account', style: TextStyle(fontSize: 9.5, color: Color(0xFF2E7D32), fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFF1F1EF),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.close, size: 16, color: Colors.grey),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            const Divider(height: 1, color: Color(0xFFE2E2DF)),
+
+            // Drawer Items Scroll Feed
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                children: [
+                  // MAIN
+                  const Text('MAIN', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.2)),
+                  const SizedBox(height: 8),
+                  _buildDrawerItem(Icons.home_filled, 'Home', 0),
+                  _buildDrawerItem(Icons.inventory_2_outlined, 'Orders', 1),
+                  _buildDrawerItem(Icons.assignment_turned_in_outlined, 'Confirm Deliveries', 2),
+                  _buildDrawerItem(Icons.account_balance_wallet_outlined, 'Wallet', 3),
+                  _buildDrawerItem(Icons.grass_outlined, 'Browse Crops', null, subtitle: 'Crops browse screen coming soon'),
+                  _buildDrawerItem(Icons.people_outline, 'Suppliers', null, subtitle: 'Suppliers directory coming soon'),
+                  _buildDrawerItem(
+                    Icons.chat_bubble_outline,
+                    'Messages',
+                    null,
+                    subtitle: 'Direct messaging coming soon',
+                    rightWidget: Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(color: Color(0xFF2E7D32), shape: BoxShape.circle),
+                    ),
+                  ),
+                  _buildDrawerItem(
+                    Icons.notifications_none_outlined,
+                    'Notifications',
+                    null,
+                    onTap: () {
+                      Navigator.pop(context); // Close Drawer
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen()));
+                    },
+                    rightWidget: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      decoration: const BoxDecoration(color: Colors.orange, shape: BoxShape.circle),
+                      child: const Text('3', style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  _buildDrawerItem(Icons.bookmark_outline, 'Saved Items', null, subtitle: 'Bookmarks coming soon'),
+
+                  const SizedBox(height: 20),
+                  // QUICK ACCESS
+                  const Text('QUICK ACCESS', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.2)),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(child: _buildQuickAccessCard(Icons.add_circle_outline, 'New Order', 'Place a new order', () => _navigateToTab(1))),
+                      const SizedBox(width: 8),
+                      Expanded(child: _buildQuickAccessCard(Icons.local_shipping_outlined, 'Track Order', 'Track your delivery', null)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(child: _buildQuickAccessCard(Icons.payment_outlined, 'Payment History', 'View your payments', () => _navigateToTab(3))),
+                      const SizedBox(width: 8),
+                      Expanded(child: _buildQuickAccessCard(Icons.help_outline, 'Help Center', 'Get help & support', null)),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+                  // SUPPORT
+                  const Text('SUPPORT', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.2)),
+                  const SizedBox(height: 8),
+                  _buildSupportRow(Icons.person_add_alt_1_outlined, 'Invite Team Member', 'Add your team to collaborate'),
+                  _buildSupportRow(Icons.star_border_outlined, 'Rate Our App', 'Your feedback helps us improve'),
+                  _buildSupportRow(Icons.share_outlined, 'Share GreenMart', 'Invite others and grow together'),
+
+                  const SizedBox(height: 20),
+                  // Upgrade to Premium Card
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF9F2),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: const Color(0xFFFFE0B2)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.workspace_premium, color: Colors.orange, size: 20),
+                        const SizedBox(width: 10),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Upgrade to Premium', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFFE65100))),
+                              SizedBox(height: 2),
+                              Text('Unlock exclusive benefits and higher limits', style: TextStyle(fontSize: 8.5, color: Colors.grey)),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right, color: Colors.orange, size: 16),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+                  // Log Out
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+                        (route) => false,
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF5F5),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: const Color(0xFFFFD1D1)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.logout, color: Colors.red, size: 16),
+                          const SizedBox(width: 10),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Log Out', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.red)),
+                                SizedBox(height: 2),
+                                Text('Sign out from your account', style: TextStyle(fontSize: 8.5, color: Colors.grey)),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.chevron_right, color: Colors.red, size: 16),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Center(
+                    child: Text(
+                      'GreenMart Buyer v1.2.0',
+                      style: TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem(
+    IconData icon,
+    String label,
+    int? targetIndex, {
+    String? subtitle,
+    Widget? rightWidget,
+    VoidCallback? onTap,
+  }) {
+    bool isSelected = targetIndex != null && _currentIndex == targetIndex;
+    Color bg = isSelected ? const Color(0xFFE8F5E9) : Colors.transparent;
+    Color color = isSelected ? const Color(0xFF2E7D32) : const Color(0xFF333333);
+
+    return GestureDetector(
+      onTap: onTap ?? () {
+        if (targetIndex != null) {
+          _navigateToTab(targetIndex);
+        } else if (subtitle != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(subtitle), backgroundColor: const Color(0xFF2E7D32)),
+          );
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 18),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(fontSize: 12, fontWeight: isSelected ? FontWeight.bold : FontWeight.w500, color: color),
+              ),
+            ),
+            if (rightWidget != null) rightWidget,
+            const SizedBox(width: 4),
+            Icon(Icons.chevron_right, size: 14, color: isSelected ? const Color(0xFF2E7D32) : Colors.grey),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickAccessCard(IconData icon, String title, String sub, VoidCallback? onTap) {
+    return GestureDetector(
+      onTap: onTap ?? () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$title details coming soon!'), backgroundColor: const Color(0xFF2E7D32)),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE2E2DF)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 24,
+              height: 24,
+              decoration: const BoxDecoration(color: Color(0xFFE8F5E9), shape: BoxShape.circle),
+              child: Center(child: Icon(icon, color: const Color(0xFF2E7D32), size: 13)),
+            ),
+            const SizedBox(height: 8),
+            Text(title, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+            const SizedBox(height: 1),
+            Text(sub, style: const TextStyle(fontSize: 8, color: Colors.grey)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSupportRow(IconData icon, String title, String sub) {
+    return ListTile(
+      dense: true,
+      contentPadding: EdgeInsets.zero,
+      leading: Container(
+        width: 28,
+        height: 28,
+        decoration: const BoxDecoration(color: Color(0xFFF1F1EF), shape: BoxShape.circle),
+        child: Icon(icon, color: const Color(0xFF333333), size: 14),
+      ),
+      title: Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+      subtitle: Text(sub, style: const TextStyle(fontSize: 8.5, color: Colors.grey)),
+      trailing: const Icon(Icons.chevron_right, size: 14, color: Colors.grey),
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$title clicked!'), backgroundColor: const Color(0xFF2E7D32)),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: _buildAppDrawer(context),
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
@@ -85,6 +416,7 @@ class _BuyerTabShellState extends State<BuyerTabShell> {
     );
   }
 }
+
 
 // 1. Buyer Dashboard Screen (Redesigned matching mockup)
 class BuyerDashboardScreen extends StatefulWidget {
@@ -223,9 +555,11 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.menu, color: Color(0xFF333333)),
-                    onPressed: () {},
+                  Builder(
+                    builder: (ctx) => IconButton(
+                      icon: const Icon(Icons.menu, color: Color(0xFF333333)),
+                      onPressed: () => Scaffold.of(ctx).openDrawer(),
+                    ),
                   ),
                   const Expanded(
                     child: Column(
@@ -826,9 +1160,11 @@ class _BuyerOrdersScreenState extends State<BuyerOrdersScreen> with SingleTicker
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.menu, color: Color(0xFF333333)),
-                    onPressed: () {},
+                  Builder(
+                    builder: (ctx) => IconButton(
+                      icon: const Icon(Icons.menu, color: Color(0xFF333333)),
+                      onPressed: () => Scaffold.of(ctx).openDrawer(),
+                    ),
                   ),
                   const Expanded(
                     child: Column(
@@ -1309,9 +1645,11 @@ class BuyerConfirmationsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.menu, color: Color(0xFF333333)),
-                    onPressed: () {},
+                  Builder(
+                    builder: (ctx) => IconButton(
+                      icon: const Icon(Icons.menu, color: Color(0xFF333333)),
+                      onPressed: () => Scaffold.of(ctx).openDrawer(),
+                    ),
                   ),
                   const Expanded(
                     child: Column(
@@ -1744,9 +2082,11 @@ class _BuyerWalletScreenState extends State<BuyerWalletScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.menu, color: Color(0xFF333333)),
-                    onPressed: () {},
+                  Builder(
+                    builder: (ctx) => IconButton(
+                      icon: const Icon(Icons.menu, color: Color(0xFF333333)),
+                      onPressed: () => Scaffold.of(ctx).openDrawer(),
+                    ),
                   ),
                   const Expanded(
                     child: Column(
@@ -2246,9 +2586,11 @@ class BuyerProfileScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.menu, color: Color(0xFF333333)),
-                    onPressed: () {},
+                  Builder(
+                    builder: (ctx) => IconButton(
+                      icon: const Icon(Icons.menu, color: Color(0xFF333333)),
+                      onPressed: () => Scaffold.of(ctx).openDrawer(),
+                    ),
                   ),
                   const Expanded(
                     child: Column(
