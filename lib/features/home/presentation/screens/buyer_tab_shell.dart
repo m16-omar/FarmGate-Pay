@@ -791,84 +791,502 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
   }
 }
 
-// 2. Buyer Orders Screen
-class BuyerOrdersScreen extends StatelessWidget {
+// 2. Buyer Orders Screen (Redesigned matching mockup)
+class BuyerOrdersScreen extends StatefulWidget {
   const BuyerOrdersScreen({super.key});
 
   @override
+  State<BuyerOrdersScreen> createState() => _BuyerOrdersScreenState();
+}
+
+class _BuyerOrdersScreenState extends State<BuyerOrdersScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        backgroundColor: const Color(0xFFFBFBF9),
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          title: const Text('My Sourcing Orders', style: TextStyle(color: Color(0xFF333333), fontSize: 16, fontWeight: FontWeight.bold)),
-          bottom: const TabBar(
-            labelColor: Color(0xFF2E7D32),
-            unselectedLabelColor: Colors.grey,
-            indicatorColor: Color(0xFF2E7D32),
-            tabs: [
-              Tab(text: 'Active Escrow'),
-              Tab(text: 'Completed Transactions'),
-            ],
-          ),
-        ),
-        body: TabBarView(
+    return Scaffold(
+      backgroundColor: const Color(0xFFFBFBF9),
+      body: SafeArea(
+        child: Column(
           children: [
-            ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _buildSourcingOrderCard('Maize Procurement', '2,500 kg', '₦1,125,000', 'ESCROW', 'ABC Farms', 'Estimated Arrival: Today • 4:30 PM'),
-                _buildSourcingOrderCard('Rice Contract', '1,200 kg', '₦540,000', 'AWAITING_CONFIRMATION', 'Northern Rice Mills', 'Delivered: Today • 8:15 AM'),
-              ],
+            // Header (My Orders, Hamburger, Search, Bell, Avatar)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Color(0xFF333333)),
+                    onPressed: () {},
+                  ),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'My Orders',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'Track and manage all your orders',
+                          style: TextStyle(fontSize: 11, color: Color(0xFF888888), fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.search, color: Color(0xFF333333)),
+                    onPressed: () {},
+                  ),
+                  Stack(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.notifications_none, color: Color(0xFF333333)),
+                        onPressed: () {},
+                      ),
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.orange,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Text(
+                            '3',
+                            style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Color(0xFFE3F2FD),
+                    child: Text('👨🏾', style: TextStyle(fontSize: 16)),
+                  ),
+                ],
+              ),
             ),
-            ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _buildSourcingOrderCard('Soybeans Sourcing', '5,000 kg', '₦2,000,000', 'PAID', 'Zaria Growers Coop', 'Settled: July 20, 2026'),
-                _buildSourcingOrderCard('Tomato Sourcing', '3,000 kg', '₦900,000', 'PAID', 'Kano Farmers Union', 'Settled: July 19, 2026'),
-              ],
+
+            // TabBar Row
+            Container(
+              color: Colors.white,
+              child: TabBar(
+                controller: _tabController,
+                labelColor: const Color(0xFF2E7D32),
+                unselectedLabelColor: Colors.grey,
+                indicatorColor: const Color(0xFF2E7D32),
+                indicatorWeight: 3,
+                labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                tabs: [
+                  const Tab(text: 'All Orders'),
+                  Tab(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('Active'),
+                        const SizedBox(width: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(10)),
+                          child: const Text('6', style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                  Tab(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('Pending'),
+                        const SizedBox(width: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(10)),
+                          child: const Text('3', style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                  const Tab(text: 'Completed'),
+                ],
+              ),
             ),
+
+            // Content
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildAllOrdersView(),
+                  _buildAllOrdersView(), // Active Filter placeholder
+                  _buildAllOrdersView(), // Pending Filter placeholder
+                  _buildAllOrdersView(), // Completed Filter placeholder
+                ],
+              ),
+            )
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSourcingOrderCard(String title, String qty, String amt, String status, String supplier, String dateInfo) {
-    Color statusBg = status == 'PAID' ? const Color(0xFFE8F5E9) : const Color(0xFFFFF3E0);
-    Color statusColor = status == 'PAID' ? const Color(0xFF2E7D32) : const Color(0xFFE65100);
+  Widget _buildAllOrdersView() {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        // KPI Stats row
+        Row(
+          children: [
+            _buildStatCard('42', 'Total Orders', 'This Month', Icons.shopping_bag_outlined, const Color(0xFFE8F5E9), const Color(0xFF2E7D32)),
+            const SizedBox(width: 6),
+            _buildStatCard('6', 'Active Orders', 'In Progress', Icons.local_shipping_outlined, const Color(0xFFFFF3E0), const Color(0xFFE65100)),
+            const SizedBox(width: 6),
+            _buildStatCard('3', 'Pending Orders', 'Awaiting Action', Icons.hourglass_top_outlined, const Color(0xFFFFFDE7), const Color(0xFFF57F17)),
+            const SizedBox(width: 6),
+            _buildStatCard('36', 'Completed', 'This Month', Icons.check_circle_outline, const Color(0xFFE8F5E9), const Color(0xFF2E7D32)),
+          ],
+        ),
+        const SizedBox(height: 24),
 
+        // Active Orders Header
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text('Active Orders', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+            Text('See All >', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+        // Card 1: Maize
+        _buildActiveOrderCard(
+          crop: 'Maize',
+          weight: '2,500 kg',
+          value: '₦1,125,000',
+          orderId: '#ORD-2024-1056',
+          supplier: 'ABC Farms',
+          orderDate: 'May 10, 2024',
+          eta: 'Today, 4:30 PM',
+          statusText: 'On the Way',
+          statusColor: const Color(0xFF2E7D32),
+          statusBg: const Color(0xFFE8F5E9),
+          isMaize: true,
+          timelineSteps: const ['Ordered', 'Confirmed', 'On the Way', 'Delivered'],
+          activeStepIdx: 2,
+          stepDates: const ['May 10', 'May 10', 'May 12', ''],
+        ),
+        const SizedBox(height: 16),
+
+        // Card 2: Rice
+        _buildActiveOrderCard(
+          crop: 'Rice',
+          weight: '1,200 kg',
+          value: '₦600,000',
+          orderId: '#ORD-2024-1057',
+          supplier: 'Green Fields Ltd',
+          orderDate: 'May 11, 2024',
+          eta: 'Tomorrow, 10:00 AM',
+          statusText: 'Preparing',
+          statusColor: Colors.orange,
+          statusBg: const Color(0xFFFFF3E0),
+          isMaize: false,
+          timelineSteps: const ['Ordered', 'Confirmed', 'Preparing', 'On the Way'],
+          activeStepIdx: 2,
+          stepDates: const ['May 11', 'May 11', 'May 12', ''],
+        ),
+        const SizedBox(height: 24),
+
+        // Order History Header
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text('Order History', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+            Text('See All >', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+        // History items
+        _buildHistoryListItem('Tomato', '800 kg • ₦560/kg', 'Supplier: Fresh Harvests', 'Delivered on May 8, 2024', 'Delivered', const Color(0xFF2E7D32), const Color(0xFFE8F5E9), '₦448,000', const Color(0xFFFBE9E7)),
+        const SizedBox(height: 12),
+        _buildHistoryListItem('Yam', '1,000 kg • ₦700/kg', 'Supplier: ABC Farms', 'Delivered on May 5, 2024', 'Delivered', const Color(0xFF2E7D32), const Color(0xFFE8F5E9), '₦700,000', const Color(0xFFFAF7F0)),
+        const SizedBox(height: 12),
+        _buildHistoryListItem('Groundnut', '500 kg • ₦650/kg', 'Supplier: Green Fields Ltd', 'Cancelled on May 3, 2024', 'Cancelled', Colors.red, const Color(0xFFFBE9E7), '₦325,000', const Color(0xFFFFF8E1)),
+      ],
+    );
+  }
+
+  Widget _buildStatCard(String val, String title, String subtitle, IconData icon, Color bg, Color iconCol) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        height: 72,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFE2E2DF)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(val, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
+                  child: Center(child: Icon(icon, color: iconCol, size: 10)),
+                )
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 7.5, fontWeight: FontWeight.bold, color: Colors.black54)),
+                Text(subtitle, style: const TextStyle(fontSize: 6.5, color: Colors.grey)),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActiveOrderCard({
+    required String crop,
+    required String weight,
+    required String value,
+    required String orderId,
+    required String supplier,
+    required String orderDate,
+    required String eta,
+    required String statusText,
+    required Color statusColor,
+    required Color statusBg,
+    required bool isMaize,
+    required List<String> timelineSteps,
+    required int activeStepIdx,
+    required List<String> stepDates,
+  }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: const Color(0xFFE2E2DF)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: statusBg, borderRadius: BorderRadius.circular(6)),
-                child: Text(status, style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: statusColor)),
-              )
+                width: 85,
+                height: 85,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFAF7F0),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: CustomPaint(
+                    painter: isMaize ? _MaizeCardPainter() : _RiceThumbnailPainter(),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: statusBg,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text('🚚 ', style: TextStyle(fontSize: 10)),
+                              Text(statusText, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: statusColor)),
+                            ],
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(orderId, style: const TextStyle(fontSize: 9.5, color: Colors.grey, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(crop, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    const Text('2,500 kg', style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
             ],
           ),
-          const SizedBox(height: 6),
-          Text('Supplier: $supplier • Quantity: $qty', style: const TextStyle(color: Colors.grey, fontSize: 10)),
-          const SizedBox(height: 2),
-          Text('Total Cost: $amt', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Color(0xFF2E7D32))),
-          const Divider(height: 20),
-          Text(dateInfo, style: const TextStyle(fontSize: 9.5, color: Colors.grey, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildMetaCol('Supplier', supplier),
+              _buildMetaCol('Order Date', orderDate),
+              _buildMetaCol('ETA', eta, color: statusColor, bg: statusBg),
+            ],
+          ),
+          const Divider(height: 24),
+          _buildTimelineTracker(timelineSteps, activeStepIdx, stepDates),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMetaCol(String title, String val, {Color? color, Color? bg}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: const TextStyle(fontSize: 8, color: Colors.grey, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 2),
+        Container(
+          padding: bg != null ? const EdgeInsets.symmetric(horizontal: 6, vertical: 2) : EdgeInsets.zero,
+          decoration: bg != null ? BoxDecoration(color: bg, borderRadius: BorderRadius.circular(4)) : null,
+          child: Text(
+            val,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: color ?? const Color(0xFF333333),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTimelineTracker(List<String> steps, int activeIdx, List<String> dates) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: List.generate(steps.length, (idx) {
+        bool isDone = idx < activeIdx;
+        bool isActive = idx == activeIdx;
+        Color stepColor = isDone
+            ? const Color(0xFF2E7D32)
+            : isActive
+                ? Colors.orange
+                : Colors.grey.shade300;
+
+        return Expanded(
+          child: Row(
+            children: [
+              Column(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: stepColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Icon(
+                        isDone
+                            ? Icons.check
+                            : isActive
+                                ? Icons.local_shipping
+                                : Icons.circle,
+                        color: Colors.white,
+                        size: 10,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(steps[idx], style: TextStyle(fontSize: 7.8, fontWeight: FontWeight.bold, color: stepColor)),
+                  if (dates[idx].isNotEmpty)
+                    Text(dates[idx], style: const TextStyle(fontSize: 6.8, color: Colors.grey)),
+                ],
+              ),
+              if (idx < steps.length - 1)
+                Expanded(
+                  child: Container(
+                    height: 2,
+                    color: idx < activeIdx ? const Color(0xFF2E7D32) : Colors.grey.shade300,
+                  ),
+                ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildHistoryListItem(String crop, String details, String supplier, String date, String status, Color statusCol, Color statusBg, String amt, Color itemBg) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: const Color(0xFFE2E2DF)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: itemBg,
+              shape: BoxShape.circle,
+            ),
+            child: const Center(child: Text('🌽', style: TextStyle(fontSize: 18))), // Emoji fallback
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(crop, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 2),
+                Text(details, style: const TextStyle(fontSize: 9.5, color: Colors.grey)),
+                Text(supplier, style: const TextStyle(fontSize: 9.5, color: Colors.grey)),
+                Text(date, style: const TextStyle(fontSize: 8.5, color: Colors.grey)),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(color: statusBg, borderRadius: BorderRadius.circular(6)),
+                child: Text(status, style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: statusCol)),
+              ),
+              const SizedBox(height: 6),
+              Text(amt, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+            ],
+          ),
+          const SizedBox(width: 6),
+          const Icon(Icons.more_vert, color: Colors.grey, size: 18),
         ],
       ),
     );
