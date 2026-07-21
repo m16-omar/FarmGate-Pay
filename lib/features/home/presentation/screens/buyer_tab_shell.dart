@@ -1293,7 +1293,7 @@ class _BuyerOrdersScreenState extends State<BuyerOrdersScreen> with SingleTicker
   }
 }
 
-// 3. Buyer Confirmations Screen
+// 3. Buyer Confirmations Screen (Redesigned matching mockup)
 class BuyerConfirmationsScreen extends StatelessWidget {
   const BuyerConfirmationsScreen({super.key});
 
@@ -1302,72 +1302,417 @@ class BuyerConfirmationsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFFBFBF9),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Confirm Receipts', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 2),
-              const Text('Verify delivered quantities before releasing escrow funds', style: TextStyle(fontSize: 11, color: Colors.grey)),
-              const SizedBox(height: 20),
-              Expanded(
-                child: ListView(
-                  children: [
-                    _buildPendingConfirmCard(context, 'Rice Crop Sourcing', '1,200 kg', '₦540,000', 'Northern Rice Mills', 'Delivered Today, 8:15 AM'),
-                  ],
-                ),
-              )
-            ],
-          ),
+        child: Column(
+          children: [
+            // Header (Confirm Deliveries, Hamburger, Bell, Avatar)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Color(0xFF333333)),
+                    onPressed: () {},
+                  ),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Confirm Deliveries',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'Review and confirm your received orders',
+                          style: TextStyle(fontSize: 11, color: Color(0xFF888888), fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Stack(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.notifications_none, color: Color(0xFF333333)),
+                        onPressed: () {},
+                      ),
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.orange,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Text(
+                            '3',
+                            style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Color(0xFFE3F2FD),
+                    child: Text('👨🏾', style: TextStyle(fontSize: 16)),
+                  ),
+                ],
+              ),
+            ),
+
+            // Main Content Area
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                children: [
+                  // KPI Stats row
+                  Row(
+                    children: [
+                      _buildStatCard('4', 'Pending Confirmation', 'Orders', Icons.hourglass_top_outlined, const Color(0xFFFFF3E0), const Color(0xFFE65100)),
+                      const SizedBox(width: 6),
+                      _buildStatCard('34', 'Confirmed', 'This Month', Icons.check_circle_outline, const Color(0xFFE8F5E9), const Color(0xFF2E7D32)),
+                      const SizedBox(width: 6),
+                      _buildStatCard('42', 'Total Orders', 'This Month', Icons.assignment_outlined, const Color(0xFFE3F2FD), const Color(0xFF1565C0)),
+                      const SizedBox(width: 6),
+                      _buildStatCard('₦8,450,000', 'Total Spent', 'This Month', Icons.payments_outlined, const Color(0xFFE8F5E9), const Color(0xFF2E7D32)),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Pending Confirmations Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text('Pending Confirmations', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                      Text('View All (4) >', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Rice Card
+                  _buildPendingCard(
+                    context: context,
+                    crop: 'Rice',
+                    weight: '1,200 kg • ₦500/kg',
+                    supplier: 'Green Fields Ltd',
+                    dateText: 'Delivered Today',
+                    timeText: 'May 12, 2024 • 8:15 AM',
+                    orderId: '#ORD-2024-1057',
+                    amount: '₦600,000',
+                    isMaize: false,
+                    isRice: true,
+                    isTomato: false,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Maize Card
+                  _buildPendingCard(
+                    context: context,
+                    crop: 'Maize',
+                    weight: '2,500 kg • ₦450/kg',
+                    supplier: 'ABC Farms',
+                    dateText: 'Delivered Yesterday',
+                    timeText: 'May 11, 2024 • 4:30 PM',
+                    orderId: '#ORD-2024-1056',
+                    amount: '₦1,125,000',
+                    isMaize: true,
+                    isRice: false,
+                    isTomato: false,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Tomato Card
+                  _buildPendingCard(
+                    context: context,
+                    crop: 'Tomato',
+                    weight: '800 kg • ₦580/kg',
+                    supplier: 'Fresh Harvests',
+                    dateText: 'Delivered Yesterday',
+                    timeText: 'May 11, 2024 • 12:10 PM',
+                    orderId: '#ORD-2024-1053',
+                    amount: '₦448,000',
+                    isMaize: false,
+                    isRice: false,
+                    isTomato: true,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Yam Card
+                  _buildPendingCard(
+                    context: context,
+                    crop: 'Yam',
+                    weight: '1,000 kg • ₦700/kg',
+                    supplier: 'ABC Farms',
+                    dateText: 'Delivered May 9',
+                    timeText: 'May 9, 2024 • 3:20 PM',
+                    orderId: '#ORD-2024-1049',
+                    amount: '₦700,000',
+                    isMaize: false,
+                    isRice: false,
+                    isTomato: false,
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Recently Confirmed Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text('Recently Confirmed', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                      Text('View All >', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Recently Confirmed Items
+                  _buildRecentlyConfirmedItem('Groundnut', '500 kg • ₦650/kg', 'From Green Fields Ltd', 'Confirmed\nMay 8, 2024 • 9:20 AM', '₦325,000'),
+                  const SizedBox(height: 12),
+                  _buildRecentlyConfirmedItem('Rice', '1,500 kg • ₦500/kg', 'From Green Fields Ltd', 'Confirmed\nMay 7, 2024 • 5:45 PM', '₦750,000'),
+                  const SizedBox(height: 12),
+                  _buildRecentlyConfirmedItem('Maize', '2,000 kg • ₦450/kg', 'From ABC Farms', 'Confirmed\nMay 6, 2024 • 10:15 AM', '₦900,000'),
+                  const SizedBox(height: 24),
+
+                  // Guidelines Info Box
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F8E9),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFDCEDC8)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.security, color: Color(0xFF2E7D32), size: 20),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Confirmation Guidelines',
+                                style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20)),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Please inspect your delivery before confirming. Once confirmed, the payment will be released to the supplier.',
+                                style: TextStyle(fontSize: 9.5, color: Colors.grey, fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        TextButton(
+                          onPressed: () {},
+                          style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero),
+                          child: const Text('Learn More >', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildPendingConfirmCard(BuildContext context, String crop, String weight, String value, String supplier, String time) {
+  Widget _buildStatCard(String val, String title, String subtitle, IconData icon, Color bg, Color iconCol) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        height: 72,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFE2E2DF)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    val,
+                    style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
+                  child: Center(child: Icon(icon, color: iconCol, size: 10)),
+                )
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 7.5, fontWeight: FontWeight.bold, color: Colors.black54)),
+                Text(subtitle, style: const TextStyle(fontSize: 6.5, color: Colors.grey)),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPendingCard({
+    required BuildContext context,
+    required String crop,
+    required String weight,
+    required String supplier,
+    required String dateText,
+    required String timeText,
+    required String orderId,
+    required String amount,
+    required bool isMaize,
+    required bool isRice,
+    required bool isTomato,
+  }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: const Color(0xFFE2E2DF)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 76,
+            height: 76,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFAF7F0),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: CustomPaint(
+                painter: isMaize
+                    ? _MaizeCardPainter()
+                    : isRice
+                        ? _RiceThumbnailPainter()
+                        : isTomato
+                            ? _TomatoCardPainter()
+                            : _YamCardPainter(),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(crop, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.bold)),
+                Text(weight, style: const TextStyle(fontSize: 9.5, color: Colors.grey, fontWeight: FontWeight.w600)),
+                Text(supplier, style: const TextStyle(fontSize: 9.5, color: Colors.grey)),
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(color: const Color(0xFFFFF3E0), borderRadius: BorderRadius.circular(8)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('🚚 ', style: TextStyle(fontSize: 9)),
+                      Text(dateText, style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.orange)),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(timeText, style: const TextStyle(fontSize: 7.8, color: Colors.grey)),
+                Text('Order ID: $orderId', style: const TextStyle(fontSize: 7.8, color: Colors.grey, fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const Text('Total Amount', style: TextStyle(fontSize: 8, color: Colors.grey, fontWeight: FontWeight.bold)),
+              Text(amount, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('$crop delivery verification success! Escrow released.'), backgroundColor: const Color(0xFF2E7D32)),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2E7D32),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  minimumSize: Size.zero,
+                ),
+                child: const Text('Confirm Receipt', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.bold)),
+              ),
+              const SizedBox(height: 4),
+              OutlinedButton(
+                onPressed: () {},
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.black87,
+                  side: const BorderSide(color: Color(0xFFE2E2DF)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  minimumSize: Size.zero,
+                ),
+                child: const Text('Report Issue', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecentlyConfirmedItem(String crop, String qty, String supplier, String date, String amt) {
+    return Container(
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFFE2E2DF)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: const BoxDecoration(color: Color(0xFFFAF7F0), shape: BoxShape.circle),
+            child: const Center(child: Text('🌾', style: TextStyle(fontSize: 16))),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(crop, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                Text('$qty • $supplier', style: const TextStyle(fontSize: 9.5, color: Colors.grey)),
+              ],
+            ),
+          ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(crop, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-              Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+              const Icon(Icons.check_circle, color: Color(0xFF2E7D32), size: 14),
+              const SizedBox(width: 4),
+              Text(date, style: const TextStyle(fontSize: 8, color: Colors.grey, fontWeight: FontWeight.w600)),
             ],
           ),
-          const SizedBox(height: 4),
-          Text('Supplier: $supplier • Quantity: $weight', style: const TextStyle(fontSize: 10, color: Colors.grey)),
-          Text('Status: $time', style: const TextStyle(fontSize: 9.5, color: Colors.orange, fontWeight: FontWeight.bold)),
-          const Divider(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Contract ID: SOURCING-9284', style: TextStyle(fontFamily: 'monospace', fontSize: 9, color: Colors.grey)),
-              ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Delivery verification success! Escrow released.'), backgroundColor: Color(0xFF2E7D32)),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                ),
-                child: const Text('Confirm & Release Payout', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
-              )
-            ],
-          )
+          const SizedBox(width: 16),
+          Text(amt, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+          const SizedBox(width: 8),
+          const Icon(Icons.more_vert, color: Colors.grey, size: 18),
         ],
       ),
     );
@@ -1730,3 +2075,80 @@ class _RouteMapPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+// Custom Painter to draw fresh tomato illustration
+class _TomatoCardPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    // Draw red glossy body 1
+    final redPaint = Paint()
+      ..color = const Color(0xFFD32F2F)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(Offset(w * 0.4, h * 0.55), 22, redPaint);
+
+    // Draw red glossy body 2
+    canvas.drawCircle(Offset(w * 0.65, h * 0.52), 18, redPaint);
+
+    // Draw green leaf/stem crown on top 1
+    final leafPaint = Paint()
+      ..color = const Color(0xFF2E7D32)
+      ..style = PaintingStyle.fill;
+      
+    final leaf1 = Path()
+      ..moveTo(w * 0.4, h * 0.25)
+      ..quadraticBezierTo(w * 0.35, h * 0.15, w * 0.42, h * 0.1)
+      ..quadraticBezierTo(w * 0.48, h * 0.2, w * 0.4, h * 0.25)
+      ..close();
+    canvas.drawPath(leaf1, leafPaint);
+
+    // Draw green leaf/stem crown on top 2
+    final leaf2 = Path()
+      ..moveTo(w * 0.65, h * 0.28)
+      ..quadraticBezierTo(w * 0.6, h * 0.2, w * 0.67, h * 0.15)
+      ..quadraticBezierTo(w * 0.72, h * 0.24, w * 0.65, h * 0.28)
+      ..close();
+    canvas.drawPath(leaf2, leafPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// Custom Painter to draw fresh cut-open yam root illustration
+class _YamCardPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    // Outer brown root skin
+    final brownPaint = Paint()
+      ..color = const Color(0xFF5D4037)
+      ..style = PaintingStyle.fill;
+      
+    canvas.drawOval(Rect.fromLTRB(w * 0.15, h * 0.3, w * 0.85, h * 0.7), brownPaint);
+
+    // Cut open face inside (creamy starch center)
+    final creamPaint = Paint()
+      ..color = const Color(0xFFFFF9C4)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawOval(Rect.fromLTRB(w * 0.45, h * 0.32, w * 0.82, h * 0.68), creamPaint);
+
+    // Details/cracks on skin
+    final crackPaint = Paint()
+      ..color = const Color(0xFF3E2723)
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+      
+    canvas.drawLine(Offset(w * 0.2, h * 0.45), Offset(w * 0.35, h * 0.55), crackPaint);
+    canvas.drawLine(Offset(w * 0.25, h * 0.58), Offset(w * 0.38, h * 0.48), crackPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
