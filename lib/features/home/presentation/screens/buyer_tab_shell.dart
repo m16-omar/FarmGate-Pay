@@ -2562,13 +2562,7 @@ class BuyerProfileScreen extends StatelessWidget {
     );
   }
 }
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+
 
 // Custom Painter to illustrate baskets of fresh produce (tomatoes, greens) with logistics truck on the hero card
 class _BuyerDashboardHeroPainter extends CustomPainter {
