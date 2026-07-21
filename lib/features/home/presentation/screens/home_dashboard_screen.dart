@@ -156,7 +156,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
               // 2. Today's Earnings Card
               Container(
                 width: double.infinity,
-                height: 200,
+                height: 225,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
