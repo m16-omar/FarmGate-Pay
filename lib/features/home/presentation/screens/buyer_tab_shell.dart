@@ -12,8 +12,13 @@ class BuyerTabShell extends StatefulWidget {
 
 class _BuyerTabShellState extends State<BuyerTabShell> {
   int _currentIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   late final List<Widget> _pages;
+
+  void _openDrawer() {
+    _scaffoldKey.currentState?.openDrawer();
+  }
 
   @override
   void initState() {
@@ -25,11 +30,12 @@ class _BuyerTabShellState extends State<BuyerTabShell> {
             _currentIndex = index;
           });
         },
+        onOpenDrawer: _openDrawer,
       ),
-      const BuyerOrdersScreen(),
-      const BuyerConfirmationsScreen(),
-      const BuyerWalletScreen(),
-      const BuyerProfileScreen(),
+      BuyerOrdersScreen(onOpenDrawer: _openDrawer),
+      BuyerConfirmationsScreen(onOpenDrawer: _openDrawer),
+      BuyerWalletScreen(onOpenDrawer: _openDrawer),
+      BuyerProfileScreen(onOpenDrawer: _openDrawer),
     ];
   }
 
@@ -366,6 +372,7 @@ class _BuyerTabShellState extends State<BuyerTabShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       drawer: _buildAppDrawer(context),
       body: IndexedStack(
         index: _currentIndex,
@@ -421,8 +428,9 @@ class _BuyerTabShellState extends State<BuyerTabShell> {
 // 1. Buyer Dashboard Screen (Redesigned matching mockup)
 class BuyerDashboardScreen extends StatefulWidget {
   final Function(int) onNavigate;
+  final VoidCallback? onOpenDrawer;
 
-  const BuyerDashboardScreen({super.key, required this.onNavigate});
+  const BuyerDashboardScreen({super.key, required this.onNavigate, this.onOpenDrawer});
 
   @override
   State<BuyerDashboardScreen> createState() => _BuyerDashboardScreenState();
@@ -555,11 +563,9 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  Builder(
-                    builder: (ctx) => IconButton(
-                      icon: const Icon(Icons.menu, color: Color(0xFF333333)),
-                      onPressed: () => Scaffold.of(ctx).openDrawer(),
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Color(0xFF333333)),
+                    onPressed: () => widget.onOpenDrawer?.call(),
                   ),
                   const Expanded(
                     child: Column(
@@ -1127,7 +1133,8 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
 
 // 2. Buyer Orders Screen (Redesigned matching mockup)
 class BuyerOrdersScreen extends StatefulWidget {
-  const BuyerOrdersScreen({super.key});
+  final VoidCallback? onOpenDrawer;
+  const BuyerOrdersScreen({super.key, this.onOpenDrawer});
 
   @override
   State<BuyerOrdersScreen> createState() => _BuyerOrdersScreenState();
@@ -1160,11 +1167,9 @@ class _BuyerOrdersScreenState extends State<BuyerOrdersScreen> with SingleTicker
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  Builder(
-                    builder: (ctx) => IconButton(
-                      icon: const Icon(Icons.menu, color: Color(0xFF333333)),
-                      onPressed: () => Scaffold.of(ctx).openDrawer(),
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Color(0xFF333333)),
+                    onPressed: () => widget.onOpenDrawer?.call(),
                   ),
                   const Expanded(
                     child: Column(
@@ -1631,7 +1636,8 @@ class _BuyerOrdersScreenState extends State<BuyerOrdersScreen> with SingleTicker
 
 // 3. Buyer Confirmations Screen (Redesigned matching mockup)
 class BuyerConfirmationsScreen extends StatelessWidget {
-  const BuyerConfirmationsScreen({super.key});
+  final VoidCallback? onOpenDrawer;
+  const BuyerConfirmationsScreen({super.key, this.onOpenDrawer});
 
   @override
   Widget build(BuildContext context) {
@@ -1645,11 +1651,9 @@ class BuyerConfirmationsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  Builder(
-                    builder: (ctx) => IconButton(
-                      icon: const Icon(Icons.menu, color: Color(0xFF333333)),
-                      onPressed: () => Scaffold.of(ctx).openDrawer(),
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Color(0xFF333333)),
+                    onPressed: () => onOpenDrawer?.call(),
                   ),
                   const Expanded(
                     child: Column(
@@ -2059,7 +2063,8 @@ class BuyerConfirmationsScreen extends StatelessWidget {
 
 // 4. Buyer Wallet Screen (Redesigned matching mockup)
 class BuyerWalletScreen extends StatefulWidget {
-  const BuyerWalletScreen({super.key});
+  final VoidCallback? onOpenDrawer;
+  const BuyerWalletScreen({super.key, this.onOpenDrawer});
 
   @override
   State<BuyerWalletScreen> createState() => _BuyerWalletScreenState();
@@ -2082,11 +2087,9 @@ class _BuyerWalletScreenState extends State<BuyerWalletScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  Builder(
-                    builder: (ctx) => IconButton(
-                      icon: const Icon(Icons.menu, color: Color(0xFF333333)),
-                      onPressed: () => Scaffold.of(ctx).openDrawer(),
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Color(0xFF333333)),
+                    onPressed: () => widget.onOpenDrawer?.call(),
                   ),
                   const Expanded(
                     child: Column(
@@ -2572,7 +2575,8 @@ class _BuyerWalletScreenState extends State<BuyerWalletScreen> {
 
 // 5. Buyer Profile Screen
 class BuyerProfileScreen extends StatelessWidget {
-  const BuyerProfileScreen({super.key});
+  final VoidCallback? onOpenDrawer;
+  const BuyerProfileScreen({super.key, this.onOpenDrawer});
 
   @override
   Widget build(BuildContext context) {
@@ -2586,11 +2590,9 @@ class BuyerProfileScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  Builder(
-                    builder: (ctx) => IconButton(
-                      icon: const Icon(Icons.menu, color: Color(0xFF333333)),
-                      onPressed: () => Scaffold.of(ctx).openDrawer(),
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Color(0xFF333333)),
+                    onPressed: () => onOpenDrawer?.call(),
                   ),
                   const Expanded(
                     child: Column(
