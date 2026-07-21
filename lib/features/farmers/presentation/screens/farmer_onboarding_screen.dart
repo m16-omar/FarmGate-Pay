@@ -141,7 +141,7 @@ class _FarmerOnboardingScreenState extends State<FarmerOnboardingScreen> {
 
               // Bank Dropdown
               DropdownButtonFormField<Map<String, String>>(
-                value: _selectedBank,
+                initialValue: _selectedBank,
                 decoration: const InputDecoration(
                   labelText: 'Destination Bank',
                   prefixIcon: Icon(Icons.account_balance),

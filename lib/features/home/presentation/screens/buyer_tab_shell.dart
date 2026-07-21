@@ -294,7 +294,7 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
+                            color: Colors.black.withValues(alpha: 0.04),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           )
@@ -1973,7 +1973,7 @@ class _BuyerWalletScreenState extends State<BuyerWalletScreen> {
                                     width: 24,
                                     height: 18,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFFFD54F).withOpacity(0.8),
+                                      color: const Color(0xFFFFD54F).withValues(alpha: 0.8),
                                       borderRadius: BorderRadius.circular(3),
                                     ),
                                   ),
@@ -2239,65 +2239,329 @@ class BuyerProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFFBFBF9),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 16),
-              const CircleAvatar(
-                radius: 36,
-                backgroundColor: Color(0xFFE3F2FD),
-                child: Icon(Icons.business, color: Color(0xFF1565C0), size: 36),
-              ),
-              const SizedBox(height: 12),
-              const Text('ABC Agro-Processors Ltd', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const Text('buyer@abcagro.com', style: TextStyle(fontSize: 11, color: Colors.grey)),
-              const SizedBox(height: 24),
-              
-              // Settings list
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFE2E2DF)),
-                ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.swap_horiz, color: Color(0xFF2E7D32)),
-                      title: const Text('Switch Active Role', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-                      subtitle: const Text('Swap to Farmer or Cooperative persona', style: TextStyle(fontSize: 10)),
-                      trailing: const Icon(Icons.chevron_right, size: 18),
-                      onTap: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (_) => const RoleSelectionScreen()),
-                          (route) => false,
-                        );
-                      },
+        child: Column(
+          children: [
+            // Header Row (Hamburger, My Profile, Notification Bell, Avatar)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Color(0xFF333333)),
+                    onPressed: () {},
+                  ),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'My Profile',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'Manage your account and preferences',
+                          style: TextStyle(fontSize: 11, color: Color(0xFF888888), fontWeight: FontWeight.w500),
+                        ),
+                      ],
                     ),
-                    const Divider(height: 1, color: Color(0xFFF1F1EF)),
-                    ListTile(
-                      leading: const Icon(Icons.lock_outline, color: Color(0xFF2E7D32)),
-                      title: const Text('Escrow Settings', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-                      subtitle: const Text('Manage linked bank keys & Monnify contracts', style: TextStyle(fontSize: 10)),
-                      trailing: const Icon(Icons.chevron_right, size: 18),
-                    ),
-                  ],
-                ),
+                  ),
+                  Stack(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.notifications_none, color: Color(0xFF333333)),
+                        onPressed: () {},
+                      ),
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.orange,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Text(
+                            '3',
+                            style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Color(0xFFE3F2FD),
+                    child: Text('👨🏾', style: TextStyle(fontSize: 16)),
+                  ),
+                ],
               ),
-              const SizedBox(height: 24),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const WelcomeScreen()),
-                    (route) => false,
-                  );
-                },
-                child: const Text('Log Out', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 13)),
-              )
+            ),
+
+            // Profile scrollable body
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                children: [
+                  // Top Profile Info Card
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFE2E2DF)),
+                    ),
+                    child: Row(
+                      children: [
+                        // Left Avatar with camera overlay
+                        Stack(
+                          children: [
+                            const CircleAvatar(
+                              radius: 40,
+                              backgroundColor: Color(0xFFC8E6C9),
+                              child: Text('👨🏾', style: TextStyle(fontSize: 42)),
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                                child: const Icon(Icons.camera_alt, size: 14, color: Color(0xFF2E7D32)),
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(width: 14),
+                        // Profile Details
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Text('Musa Abdullahi', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(color: const Color(0xFFE8F5E9), borderRadius: BorderRadius.circular(6)),
+                                    child: const Text('Buyer', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: const [
+                                  Icon(Icons.email_outlined, size: 12, color: Colors.grey),
+                                  SizedBox(width: 6),
+                                  Text('musa.abdullahi@greenmart.com', style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.w500)),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: const [
+                                  Icon(Icons.phone_outlined, size: 12, color: Colors.grey),
+                                  SizedBox(width: 6),
+                                  Text('+234 803 123 4567', style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.w500)),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: const [
+                                  Icon(Icons.location_on_outlined, size: 12, color: Colors.grey),
+                                  SizedBox(width: 6),
+                                  Text('Kano, Kano State, Nigeria', style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.w500)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right, color: Colors.grey, size: 18),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Category 1: Account & Business
+                  const Text('Account & Business', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                  const SizedBox(height: 10),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFE2E2DF)),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildMenuRow(Icons.storefront_outlined, 'Business Information', 'View and update your business details'),
+                        const Divider(height: 1, color: Color(0xFFF1F1EF)),
+                        _buildMenuRow(Icons.people_outline, 'Team Members', 'Manage your team and permissions', rightBadge: '5 Members'),
+                        const Divider(height: 1, color: Color(0xFFF1F1EF)),
+                        _buildMenuRow(Icons.location_on_outlined, 'Addresses', 'Manage your delivery and billing addresses', rightBadge: '3 Addresses'),
+                        const Divider(height: 1, color: Color(0xFFF1F1EF)),
+                        _buildMenuRow(
+                          Icons.badge_outlined,
+                          'KYC Verification',
+                          'Verify your account to increase limits',
+                          rightWidget: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              Text('Verified', style: TextStyle(fontSize: 9.5, color: Color(0xFF2E7D32), fontWeight: FontWeight.bold)),
+                              SizedBox(width: 4),
+                              Icon(Icons.check_circle, size: 12, color: Color(0xFF2E7D32)),
+                            ],
+                          ),
+                        ),
+                        const Divider(height: 1, color: Color(0xFFF1F1EF)),
+                        _buildMenuRow(
+                          Icons.swap_horiz_outlined,
+                          'Switch Persona',
+                          'Swap to Farmer or Cooperative role',
+                          onTap: () {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (_) => const RoleSelectionScreen()),
+                              (route) => false,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Category 2: Preferences
+                  const Text('Preferences', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                  const SizedBox(height: 10),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFE2E2DF)),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildMenuRow(Icons.notifications_none_outlined, 'Notification Settings', 'Manage your notification preferences'),
+                        const Divider(height: 1, color: Color(0xFFF1F1EF)),
+                        _buildMenuRow(Icons.security_outlined, 'Payment & Security', 'Change PIN, manage security and 2FA'),
+                        const Divider(height: 1, color: Color(0xFFF1F1EF)),
+                        _buildMenuRow(Icons.language_outlined, 'Language', 'Choose your preferred language', rightBadge: 'English'),
+                        const Divider(height: 1, color: Color(0xFFF1F1EF)),
+                        _buildMenuRow(Icons.monetization_on_outlined, 'Currency', 'Select your preferred currency', rightBadge: 'NGN (₦)'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Category 3: Support & Legal
+                  const Text('Support & Legal', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                  const SizedBox(height: 10),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFE2E2DF)),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildMenuRow(Icons.help_outline, 'Help Center', 'Get help and find answers'),
+                        const Divider(height: 1, color: Color(0xFFF1F1EF)),
+                        _buildMenuRow(Icons.headset_mic_outlined, 'Contact Support', 'Chat or call our support team'),
+                        const Divider(height: 1, color: Color(0xFFF1F1EF)),
+                        _buildMenuRow(Icons.description_outlined, 'Terms & Conditions', 'Read our terms and conditions'),
+                        const Divider(height: 1, color: Color(0xFFF1F1EF)),
+                        _buildMenuRow(Icons.lock_outline, 'Privacy Policy', 'Read our privacy policy'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Log Out Card
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+                        (route) => false,
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF5F5),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFFFD1D1)),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: const BoxDecoration(color: Color(0xFFFFEAEA), shape: BoxShape.circle),
+                            child: const Center(child: Icon(Icons.logout, color: Colors.red, size: 16)),
+                          ),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Log Out', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: Colors.red)),
+                                SizedBox(height: 2),
+                                Text('Sign out from your account', style: TextStyle(fontSize: 9.5, color: Colors.grey)),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.chevron_right, color: Colors.red, size: 18),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuRow(
+    IconData icon,
+    String title,
+    String subtitle, {
+    String? rightBadge,
+    Widget? rightWidget,
+    VoidCallback? onTap,
+  }) {
+    return ListTile(
+      dense: true,
+      onTap: onTap ?? () {},
+      leading: Container(
+        width: 32,
+        height: 32,
+        decoration: const BoxDecoration(color: Color(0xFFE8F5E9), shape: BoxShape.circle),
+        child: Icon(icon, color: const Color(0xFF2E7D32), size: 16),
+      ),
+      title: Text(title, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+      subtitle: Text(subtitle, style: const TextStyle(fontSize: 9.5, color: Colors.grey)),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (rightWidget != null) rightWidget,
+          if (rightBadge != null && rightWidget == null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(color: const Color(0xFFFAF7F0), borderRadius: BorderRadius.circular(6)),
+              child: Text(rightBadge, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.grey)),
+            ),
+          const SizedBox(width: 4),
+          const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
+        ],
+      ),
+    );
+  }
+}
             ],
           ),
         ),
@@ -2338,7 +2602,7 @@ class _BuyerDashboardHeroPainter extends CustomPainter {
 
     // Draw vegetable crates & logistics truck silhouettes in gold
     final goldPaint = Paint()
-      ..color = const Color(0xFFD4A017).withOpacity(0.35)
+      ..color = const Color(0xFFD4A017).withValues(alpha: 0.35)
       ..style = PaintingStyle.fill;
 
     // Crate silhouettes
@@ -2347,7 +2611,7 @@ class _BuyerDashboardHeroPainter extends CustomPainter {
 
     // Truck silhouette on the far right
     final truckPaint = Paint()
-      ..color = const Color(0xFFD4A017).withOpacity(0.5)
+      ..color = const Color(0xFFD4A017).withValues(alpha: 0.5)
       ..style = PaintingStyle.fill;
 
     // Truck cargo box
@@ -2571,7 +2835,7 @@ class _WalletCardIllustrationPainter extends CustomPainter {
     final walletPaint = Paint()
       ..color = const Color(0xFF1B5E20)
       ..style = PaintingStyle.fill;
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTB(w * 0.15, h * 0.35, w * 0.85, h * 0.85), const Radius.circular(8)), walletPaint);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTRB(w * 0.15, h * 0.35, w * 0.85, h * 0.85), const Radius.circular(8)), walletPaint);
 
     // Draw gold coin circle 1
     final coinPaint = Paint()
@@ -2586,11 +2850,13 @@ class _WalletCardIllustrationPainter extends CustomPainter {
     final claspPaint = Paint()
       ..color = const Color(0xFFFFC107)
       ..style = PaintingStyle.fill;
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTB(w * 0.72, h * 0.52, w * 0.90, h * 0.68), const Radius.circular(4)), claspPaint);
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTRB(w * 0.72, h * 0.52, w * 0.90, h * 0.68), const Radius.circular(4)), claspPaint);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+
 
 

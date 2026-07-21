@@ -233,7 +233,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                       child: const Text('No farmers onboarded. Go to Onboarding tab first.', style: TextStyle(color: Colors.red)),
                     )
                   : DropdownButtonFormField<dynamic>(
-                      value: _selectedFarmer,
+                      initialValue: _selectedFarmer,
                       decoration: const InputDecoration(border: OutlineInputBorder(), prefixIcon: Icon(Icons.person)),
                       items: _farmers.map((f) {
                         return DropdownMenuItem<dynamic>(
@@ -255,7 +255,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                         const Text('Produce Type', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                         const SizedBox(height: 8),
                         DropdownButtonFormField<String>(
-                          value: _selectedProduce,
+                          initialValue: _selectedProduce,
                           decoration: const InputDecoration(border: OutlineInputBorder()),
                           items: _produceTypes.map((p) {
                             return DropdownMenuItem<String>(value: p, child: Text(p));

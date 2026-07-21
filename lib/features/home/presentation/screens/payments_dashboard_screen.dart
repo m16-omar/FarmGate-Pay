@@ -10,7 +10,7 @@ class PaymentsDashboardScreen extends StatefulWidget {
 
 class _PaymentsDashboardScreenState extends State<PaymentsDashboardScreen> {
   bool _hideEarnings = false;
-  String _selectedPeriod = 'This Month';
+  final String _selectedPeriod = 'This Month';
 
   @override
   Widget build(BuildContext context) {
