@@ -83,15 +83,15 @@ class BuyerDashboardScreen extends StatefulWidget {
 }
 
 class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
-  double _escrowBalance = 4850000;
+  double _escrowBalance = 18500000;
   
   final List<Map<String, dynamic>> _deliveries = [
     {
       'id': 1,
       'crop': 'Maize',
       'emoji': '🌽',
-      'farmer': 'Musa Haruna',
-      'weight': '2,500 kg',
+      'farmer': 'Musa',
+      'weight': '2500kg',
       'amount': 875000,
       'status': 'ESCROW',
       'date': 'Today, 08:30 AM',
@@ -100,21 +100,11 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
       'id': 2,
       'crop': 'Rice',
       'emoji': '🌾',
-      'farmer': 'Kaduna Cooperative',
-      'weight': '5,000 kg',
-      'amount': 1950000,
-      'status': 'PENDING',
-      'date': 'Yesterday',
-    },
-    {
-      'id': 3,
-      'crop': 'Soybeans',
-      'emoji': '🫘',
-      'farmer': 'Ibrahim Bello',
-      'weight': '1,200 kg',
-      'amount': 480000,
-      'status': 'SUCCESS',
-      'date': 'Jul 18, 2025',
+      'farmer': 'Ngozi',
+      'weight': '1800kg',
+      'amount': 630000,
+      'status': 'ESCROW',
+      'date': 'Today, 09:15 AM',
     },
   ];
 
@@ -123,9 +113,9 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Text('Release Escrow Payment?'),
+        title: const Text('Confirm Delivery & Release Escrow?'),
         content: Text(
-          'This will authorize Monnify to instantly transfer ₦${_deliveries[index]['amount'].toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} to ${_deliveries[index]['farmer']}.\n\nWeight & quality certificates are verified.',
+          'Confirming will release ₦${_deliveries[index]['amount'].toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} to ${_deliveries[index]['farmer']} and finalize this transaction.',
         ),
         actions: [
           TextButton(
@@ -141,12 +131,12 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
               });
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Payment of ₦${_deliveries[index]['amount']} successfully settled to ${_deliveries[index]['farmer']}!'),
-                  backgroundColor: const Color(0xFF1B5E20),
+                  content: Text('Delivery confirmed! Payment released to ${_deliveries[index]['farmer']}.'),
+                  backgroundColor: const Color(0xFF2E7D32),
                 ),
               );
             },
-            child: const Text('Confirm & Pay', style: TextStyle(color: Color(0xFF1565C0), fontWeight: FontWeight.bold)),
+            child: const Text('Confirm Delivery', style: TextStyle(color: Color(0xFF1565C0), fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -170,7 +160,7 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Hello, ABC Agro Ltd ',
+                          'Hello, Buyer (ABC Agro) 👋',
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
                         ),
                         SizedBox(height: 2),
@@ -181,7 +171,6 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
                       ],
                     ),
                   ),
-                  // Bell Icon
                   IconButton(
                     icon: const Icon(Icons.notifications_none, color: Color(0xFF333333)),
                     onPressed: () {
@@ -197,13 +186,13 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
-                  // Escrow Account Card
+                  // Escrow Account Card (Wallet Balance Hero)
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF1976D2), Color(0xFF1565C0)],
+                        colors: [Color(0xFF2E7D32), Color(0xFF1565C0)], // Green + Blue gradient for Buyer role!
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -223,10 +212,10 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: const [
                             Text(
-                              'Procurement Escrow Balance',
-                              style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold),
+                              'Wallet Balance',
+                              style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
                             ),
-                            Icon(Icons.shield, color: Colors.white70, size: 16),
+                            Icon(Icons.account_balance_wallet, color: Colors.white70, size: 18),
                           ],
                         ),
                         const SizedBox(height: 10),
@@ -244,25 +233,19 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
                                 });
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Escrow wallet successfully funded with ₦1,000,000!'),
-                                    backgroundColor: Color(0xFF1B5E20),
+                                    content: Text('Wallet successfully funded with ₦1,000,000!'),
+                                    backgroundColor: Color(0xFF2E7D32),
                                   ),
                                 );
                               },
-                              icon: const Icon(Icons.add, size: 14),
-                              label: const Text('Fund Escrow', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                              icon: const Icon(Icons.add_circle_outline, size: 14),
+                              label: const Text('Fund Wallet', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
-                                foregroundColor: const Color(0xFF1565C0),
+                                foregroundColor: const Color(0xFF2E7D32),
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               ),
-                            ),
-                            const SizedBox(width: 10),
-                            TextButton.icon(
-                              onPressed: () {},
-                              icon: const Icon(Icons.arrow_upward, size: 14, color: Colors.white),
-                              label: const Text('Withdraw', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                             ),
                           ],
                         )
@@ -271,20 +254,22 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Quick Stats Row
+                  // Three mini stats row (Awaiting Confirmation: 12, Pending Payments: 5, Completed Today: 28)
                   Row(
                     children: [
-                      _buildMiniStat('Confirmed Produce', '18.5 Tons', Icons.local_shipping_outlined),
-                      const SizedBox(width: 12),
-                      _buildMiniStat('Total Funded', '₦15,000,000', Icons.account_balance_wallet_outlined),
+                      _buildMiniStat('Awaiting Confirmation', '12', Icons.pending_actions_outlined),
+                      const SizedBox(width: 8),
+                      _buildMiniStat('Pending Payments', '5', Icons.hourglass_top_outlined),
+                      const SizedBox(width: 8),
+                      _buildMiniStat('Completed Today', '28', Icons.check_circle_outline),
                     ],
                   ),
                   const SizedBox(height: 24),
 
-                  // Active Procurement Header
+                  // Pending Deliveries Header
                   const Text(
-                    'Recent Deliveries Requiring Payout',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                    'Pending Deliveries',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
                   ),
                   const SizedBox(height: 12),
 
@@ -398,13 +383,13 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
                 ElevatedButton(
                   onPressed: () => _confirmDeliveryPayment(index),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1565C0),
+                    backgroundColor: const Color(0xFF2E7D32), // Green color to match "Confirm" action!
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   ),
-                  child: const Text('Approve & Release Payment', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold)),
+                  child: const Text('Confirm Delivery', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
                 ),
               ],
             )

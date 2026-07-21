@@ -298,46 +298,27 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
               ),
               const SizedBox(height: 20),
 
-              // 3. Monthly Stats Row (Horizontal scroll)
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+              // 3. Stats Row
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
                     _buildStatCard(
-                      icon: Icons.shopping_bag,
+                      icon: Icons.local_shipping,
                       iconBg: const Color(0xFFE8F5E9),
                       iconColor: const Color(0xFF2E7D32),
-                      value: '₦2,450,000',
-                      label: 'Total Earned',
-                      subLabel: 'This Month',
+                      value: '2',
+                      label: 'Today\'s Deliveries',
+                      subLabel: 'Active shipments',
                     ),
-                    const SizedBox(width: 10),
-                    _buildStatCard(
-                      icon: Icons.local_shipping,
-                      iconBg: const Color(0xFFFFF3E0),
-                      iconColor: const Color(0xFFE65100),
-                      value: '18',
-                      label: 'Deliveries',
-                      subLabel: 'This Month',
-                    ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 12),
                     _buildStatCard(
                       icon: Icons.hourglass_empty,
-                      iconBg: const Color(0xFFFFFDE7),
-                      iconColor: const Color(0xFFF57F17),
-                      value: '4',
-                      label: 'Pending',
-                      subLabel: 'Deliveries',
-                    ),
-                    const SizedBox(width: 10),
-                    _buildStatCard(
-                      icon: Icons.check_circle,
-                      iconBg: const Color(0xFFE8F5E9),
-                      iconColor: const Color(0xFF1B5E20),
-                      value: '14',
-                      label: 'Completed',
-                      subLabel: 'Deliveries',
+                      iconBg: const Color(0xFFFFF3E0),
+                      iconColor: const Color(0xFFE65100),
+                      value: '₦80,000',
+                      label: 'Pending Payment',
+                      subLabel: 'In Escrow',
                     ),
                   ],
                 ),
@@ -345,78 +326,77 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
               const SizedBox(height: 24),
 
               // 4. Quick Actions
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text(
-                      'Quick Actions',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
-                    ),
-                    Text(
-                      'See All',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
-                    ),
-                  ],
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'Quick Actions',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
                 ),
               ),
               const SizedBox(height: 12),
               
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildActionButton(
-                      icon: Icons.add_home_work_outlined,
-                      label: 'New Delivery',
-                      onTap: () => widget.onNavigateToTab(1), // Navigates to Log Delivery Tab
+                      icon: Icons.local_shipping_outlined,
+                      label: 'Deliveries',
+                      onTap: () => widget.onNavigateToTab(1), // Navigates to Deliveries Tab
                     ),
-                    const SizedBox(width: 10),
-                    _buildActionButton(
-                      icon: Icons.assignment_outlined,
-                      label: 'My Deliveries',
-                      onTap: () => widget.onNavigateToTab(1),
-                    ),
-                    const SizedBox(width: 10),
                     _buildActionButton(
                       icon: Icons.account_balance_wallet_outlined,
-                      label: 'Earnings',
-                      onTap: () => widget.onNavigateToTab(2), // Navigates to ledger
+                      label: 'Payments',
+                      onTap: () => widget.onNavigateToTab(2), // Navigates to Payments Tab
                     ),
-                    const SizedBox(width: 10),
                     _buildActionButton(
-                      icon: Icons.account_balance_outlined,
-                      label: 'Transactions',
-                      onTap: () => widget.onNavigateToTab(2),
+                      icon: Icons.trending_up_outlined,
+                      label: 'Analytics',
+                      onTap: () => widget.onNavigateToTab(3), // Navigates to Analytics Tab
                     ),
-                    const SizedBox(width: 10),
                     _buildActionButton(
-                      icon: Icons.download_outlined,
-                      label: 'Withdraw',
-                      onTap: _showWithdrawDialog,
+                      icon: Icons.help_outline,
+                      label: 'Support',
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24))),
+                          builder: (context) => Container(
+                            padding: const EdgeInsets.all(24),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('FarmGate Support', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 8),
+                                const Text('Need help with a delivery, escrow payout, or scale verification? Contact our support line.', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                const SizedBox(height: 16),
+                                ListTile(
+                                  leading: const Icon(Icons.phone, color: Color(0xFF2E7D32)),
+                                  title: const Text('Call Agent (+234 800 FARMGATE)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                                ),
+                                ListTile(
+                                  leading: const Icon(Icons.chat_bubble_outline, color: Color(0xFF2E7D32)),
+                                  title: const Text('WhatsApp Support Chat', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
 
-              // 5. What do you grow?
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text(
-                      'What do you grow?',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
-                    ),
-                    Text(
-                      'Manage Crops',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
-                    ),
-                  ],
+              // 5. My Deliveries (Crops)
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'My Deliveries',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
                 ),
               ),
               const SizedBox(height: 12),
@@ -430,13 +410,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                     const SizedBox(width: 12),
                     _buildCropCircle(name: 'Rice', emoji: '🌾'),
                     const SizedBox(width: 12),
-                    _buildCropCircle(name: 'Tomato', emoji: '🍅'),
-                    const SizedBox(width: 12),
-                    _buildCropCircle(name: 'Yam', emoji: '🥔'),
-                    const SizedBox(width: 12),
                     _buildCropCircle(name: 'Groundnut', emoji: '🥜'),
-                    const SizedBox(width: 12),
-                    _buildCropCircle(name: 'Add Crop', emoji: '➕', isAddButton: true),
                   ],
                 ),
               ),
@@ -559,50 +533,83 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
 
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: const Color(0xFFE2E2DF)),
                 ),
-                child: Row(
+                child: Column(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFE8F5E9),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.arrow_downward, color: Color(0xFF2E7D32), size: 20),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Payment Received',
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                    // Item 1
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFE8F5E9),
+                            shape: BoxShape.circle,
                           ),
-                          SizedBox(height: 4),
-                          Text(
-                            'From ABC Agro Ltd',
-                            style: TextStyle(fontSize: 11, color: Color(0xFF777777), fontWeight: FontWeight.w500),
+                          child: const Icon(Icons.arrow_downward, color: Color(0xFF2E7D32), size: 18),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                'Payment Received',
+                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'From ABC Agro Ltd • Today, 8:45 AM',
+                                style: TextStyle(fontSize: 9, color: Color(0xFF777777)),
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 2),
-                          Text(
-                            'Today, 8:45 AM',
-                            style: TextStyle(fontSize: 9, color: Color(0xFF999999)),
+                        ),
+                        const Text(
+                          '+₦145,000',
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
+                        ),
+                      ],
+                    ),
+                    const Divider(height: 20, color: Color(0xFFF1F1EF)),
+                    // Item 2
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFE8F5E9),
+                            shape: BoxShape.circle,
                           ),
-                        ],
-                      ),
+                          child: const Icon(Icons.arrow_downward, color: Color(0xFF2E7D32), size: 18),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                'Payment Received',
+                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'From Kaduna Coop • Yesterday, 4:15 PM',
+                                style: TextStyle(fontSize: 9, color: Color(0xFF777777)),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Text(
+                          '+₦320,000',
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
+                        ),
+                      ],
                     ),
-                    const Text(
-                      '₦145,000',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
-                    ),
-                    const SizedBox(width: 6),
-                    const Icon(Icons.more_vert, color: Color(0xFF999999), size: 20),
                   ],
                 ),
               ),

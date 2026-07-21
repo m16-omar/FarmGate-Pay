@@ -37,7 +37,7 @@ class _CooperativeTabShellState extends State<CooperativeTabShell> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF7B1FA2), // Purple theme for cooperative
+        selectedItemColor: const Color(0xFFE29A26), // Gold theme for cooperative
         unselectedItemColor: Colors.grey,
         backgroundColor: Colors.white,
         elevation: 8,
@@ -84,30 +84,51 @@ class CooperativeDashboardScreen extends StatefulWidget {
 }
 
 class _CooperativeDashboardScreenState extends State<CooperativeDashboardScreen> {
-  final List<Map<String, dynamic>> _members = [
+  final List<Map<String, dynamic>> _topFarmers = [
     {
-      'name': 'Musa Haruna',
-      'role': 'Coop Farmer',
+      'name': 'Musa',
+      'emoji': '👨🏾🌾',
       'crop': 'Maize',
-      'emoji': '🌽',
-      'payouts': '₦2,450,000',
-      'status': 'Active',
+      'performance': '₦2.4M Settled',
+      'status': 'Top Grower',
     },
     {
-      'name': 'Ibrahim Bello',
-      'role': 'Coop Farmer',
+      'name': 'Ngozi',
+      'emoji': '👩🏾🌾',
       'crop': 'Rice',
-      'emoji': '🌾',
-      'payouts': '₦1,850,000',
-      'status': 'Active',
+      'performance': '₦1.8M Settled',
+      'status': 'Top Grower',
     },
     {
-      'name': 'Fatima Umar',
-      'role': 'Coop Farmer',
-      'crop': 'Tomato',
-      'emoji': '🍅',
-      'payouts': '₦980,000',
+      'name': 'Abdullahi',
+      'emoji': '👨🏾🌾',
+      'crop': 'Groundnut',
+      'performance': '₦1.2M Settled',
       'status': 'Active',
+    },
+  ];
+
+  final List<Map<String, dynamic>> _activities = [
+    {
+      'title': 'Farmer Registered',
+      'desc': 'Abu Sani joined Kaduna Coop',
+      'time': '10 mins ago',
+      'icon': Icons.person_add_alt_1_outlined,
+      'color': const Color(0xFF2E7D32),
+    },
+    {
+      'title': 'Settlement Completed',
+      'desc': '₦145,000 paid to Musa Haruna',
+      'time': '1 hour ago',
+      'icon': Icons.check_circle_outline,
+      'color': const Color(0xFFE29A26),
+    },
+    {
+      'title': 'Delivery Recorded',
+      'desc': '2.5 Tons of Maize logged',
+      'time': '2 hours ago',
+      'icon': Icons.local_shipping_outlined,
+      'color': const Color(0xFF2E7D32),
     },
   ];
 
@@ -146,11 +167,11 @@ class _CooperativeDashboardScreenState extends State<CooperativeDashboardScreen>
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Farmer successfully registered into Kaduna Cooperative!'),
-                  backgroundColor: Color(0xFF1B5E20),
+                  backgroundColor: Color(0xFF2E7D32),
                 ),
               );
             },
-            child: const Text('Register', style: TextStyle(color: Color(0xFF7B1FA2), fontWeight: FontWeight.bold)),
+            child: const Text('Register', style: TextStyle(color: Color(0xFFE29A26), fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -174,12 +195,12 @@ class _CooperativeDashboardScreenState extends State<CooperativeDashboardScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Kaduna Cooperative 👋',
+                          'Kaduna Farmers Cooperative',
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
                         ),
                         SizedBox(height: 2),
                         Text(
-                          'Agricultural Aggregation & Payouts',
+                          'Cooperative Manager Hub',
                           style: TextStyle(fontSize: 10, color: Color(0xFF888888), fontWeight: FontWeight.w500),
                         ),
                       ],
@@ -200,20 +221,20 @@ class _CooperativeDashboardScreenState extends State<CooperativeDashboardScreen>
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
-                  // Joint Wallet Card
+                  // Joint Wallet Card (Hero: Today's Settlements)
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF8E24AA), Color(0xFF7B1FA2)],
+                        colors: [Color(0xFF2E7D32), Color(0xFFE29A26)], // Green + Gold gradient for Coop role!
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF7B1FA2).withOpacity(0.2),
+                          color: const Color(0xFFE29A26).withOpacity(0.2),
                           blurRadius: 12,
                           offset: const Offset(0, 6),
                         )
@@ -226,16 +247,16 @@ class _CooperativeDashboardScreenState extends State<CooperativeDashboardScreen>
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: const [
                             Text(
-                              'Joint Cooperative Payout Balance',
-                              style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold),
+                              'Today\'s Settlements',
+                              style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
                             ),
-                            Icon(Icons.diversity_3, color: Colors.white70, size: 16),
+                            Icon(Icons.diversity_3, color: Colors.white70, size: 18),
                           ],
                         ),
                         const SizedBox(height: 10),
                         const Text(
-                          '₦12,800,000',
-                          style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+                          '₦4.2M',
+                          style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 16),
                         Row(
@@ -243,10 +264,10 @@ class _CooperativeDashboardScreenState extends State<CooperativeDashboardScreen>
                             ElevatedButton.icon(
                               onPressed: _showAddMemberDialog,
                               icon: const Icon(Icons.person_add, size: 14),
-                              label: const Text('Add Member', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                              label: const Text('Register Farmer', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
-                                foregroundColor: const Color(0xFF7B1FA2),
+                                foregroundColor: const Color(0xFF2E7D32),
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               ),
@@ -258,35 +279,89 @@ class _CooperativeDashboardScreenState extends State<CooperativeDashboardScreen>
                   ),
                   const SizedBox(height: 24),
 
-                  // Quick Stats Row
+                  // Three mini stats row (Active Farmers: 286, Today's Deliveries: 42, Pending: 6)
                   Row(
                     children: [
-                      _buildMiniStat('Aggregated Crops', '18.6 Tons', Icons.agriculture_outlined),
-                      const SizedBox(width: 12),
-                      _buildMiniStat('Coop Farmers', '42 Active', Icons.group_outlined),
+                      _buildMiniStat('Active Farmers', '286', Icons.people_outline),
+                      const SizedBox(width: 8),
+                      _buildMiniStat('Today\'s Deliveries', '42', Icons.inventory_2_outlined),
+                      const SizedBox(width: 8),
+                      _buildMiniStat('Pending', '6', Icons.hourglass_empty_outlined),
                     ],
                   ),
                   const SizedBox(height: 24),
 
-                  // Active Members Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Active Members Directory',
-                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text('See All', style: TextStyle(color: Color(0xFF7B1FA2), fontSize: 11, fontWeight: FontWeight.bold)),
-                      ),
-                    ],
+                  // Top Performing Farmers Header
+                  const Text(
+                    'Top Performing Farmers',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
 
-                  // Members List cards
-                  ..._members.map((m) => _buildMemberCard(m)),
-                  const SizedBox(height: 20),
+                  // Top Performing Farmers List
+                  ..._topFarmers.map((f) => _buildFarmerCard(f)),
+                  const SizedBox(height: 24),
+
+                  // Recent Activities Header
+                  const Text(
+                    'Recent Activities',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Recent Activities Column
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFE2E2DF)),
+                    ),
+                    child: Column(
+                      children: List.generate(_activities.length, (idx) {
+                        final act = _activities[idx];
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: idx == _activities.length - 1 ? 0 : 16.0),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: act['color'].withOpacity(0.08),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(act['icon'], color: act['color'], size: 18),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(act['title'], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                    const SizedBox(height: 2),
+                                    Text(act['desc'], style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                                  ],
+                                ),
+                              ),
+                              Text(act['time'], style: const TextStyle(fontSize: 8.5, color: Colors.grey)),
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Monthly Earnings Header
+                  const Text(
+                    'Monthly Earnings',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Custom performance chart
+                  _buildPerformanceChart(),
+                  const SizedBox(height: 24),
                 ],
               ),
             )
@@ -299,7 +374,7 @@ class _CooperativeDashboardScreenState extends State<CooperativeDashboardScreen>
   Widget _buildMiniStat(String label, String val, IconData icon) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -308,18 +383,18 @@ class _CooperativeDashboardScreenState extends State<CooperativeDashboardScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: const Color(0xFF7B1FA2), size: 18),
+            Icon(icon, color: const Color(0xFFE29A26), size: 18), // Gold color for icons
             const SizedBox(height: 8),
             Text(val, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
             const SizedBox(height: 2),
-            Text(label, style: const TextStyle(fontSize: 8.5, color: Color(0xFF888888), fontWeight: FontWeight.bold)),
+            Text(label, style: const TextStyle(fontSize: 8, color: Color(0xFF888888), fontWeight: FontWeight.bold)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildMemberCard(Map<String, dynamic> m) {
+  Widget _buildFarmerCard(Map<String, dynamic> f) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -337,23 +412,23 @@ class _CooperativeDashboardScreenState extends State<CooperativeDashboardScreen>
               color: Color(0xFFF7F7F5),
               shape: BoxShape.circle,
             ),
-            child: Center(child: Text(m['emoji'], style: const TextStyle(fontSize: 20))),
+            child: Center(child: Text(f['emoji'], style: const TextStyle(fontSize: 20))),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(m['name'], style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                Text(f['name'], style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 2),
-                Text('${m['role']} • ${m['crop']}', style: const TextStyle(fontSize: 10, color: Color(0xFF777777))),
+                Text('Crop: ${f['crop']}', style: const TextStyle(fontSize: 10, color: Color(0xFF777777))),
               ],
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(m['payouts'], style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+              Text(f['performance'], style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
               const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -362,11 +437,68 @@ class _CooperativeDashboardScreenState extends State<CooperativeDashboardScreen>
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  m['status'],
+                  f['status'],
                   style: const TextStyle(fontSize: 7.5, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
                 ),
               ),
             ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPerformanceChart() {
+    final months = ['May', 'Jun', 'Jul', 'Aug'];
+    final settlements = [1.8, 2.9, 4.2, 5.5];
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E2DF)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Total Settlements Logged (₦ Millions)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey)),
+          const SizedBox(height: 20),
+          SizedBox(
+            height: 120,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: List.generate(months.length, (idx) {
+                double val = settlements[idx];
+                double max = settlements.reduce((curr, next) => curr > next ? curr : next);
+                double pct = val / max;
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text('₦${val}M', style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+                    const SizedBox(height: 6),
+                    Container(
+                      width: 32,
+                      height: 80 * pct,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF2E7D32), Color(0xFFE29A26)], // Green + Gold theme bars!
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                        ),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(6),
+                          topRight: Radius.circular(6),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(months[idx], style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
+                  ],
+                );
+              }),
+            ),
           )
         ],
       ),
@@ -467,8 +599,8 @@ class CooperativeProfileScreen extends StatelessWidget {
               const SizedBox(height: 16),
               const CircleAvatar(
                 radius: 36,
-                backgroundColor: Color(0xFFF3E5F5),
-                child: Icon(Icons.handshake, color: Color(0xFF7B1FA2), size: 36),
+                backgroundColor: Color(0xFFFFF8E1), // Light gold/amber background
+                child: Icon(Icons.handshake, color: Color(0xFFE29A26), size: 36), // Gold icon
               ),
               const SizedBox(height: 12),
               const Text('Kaduna Farmers Cooperative', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -485,7 +617,7 @@ class CooperativeProfileScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.swap_horiz, color: Color(0xFF7B1FA2)),
+                      leading: const Icon(Icons.swap_horiz, color: Color(0xFFE29A26)),
                       title: const Text('Switch Active Role', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                       subtitle: const Text('Swap to Farmer or Buyer persona', style: TextStyle(fontSize: 10)),
                       trailing: const Icon(Icons.chevron_right, size: 18),
@@ -499,7 +631,7 @@ class CooperativeProfileScreen extends StatelessWidget {
                     ),
                     const Divider(height: 1, color: Color(0xFFF1F1EF)),
                     ListTile(
-                      leading: const Icon(Icons.group_outlined, color: Color(0xFF7B1FA2)),
+                      leading: const Icon(Icons.group_outlined, color: Color(0xFFE29A26)),
                       title: const Text('Manage Joint Sub-Ledgers', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                       subtitle: const Text('Verify farmer payout Monnify contracts', style: TextStyle(fontSize: 10)),
                       trailing: const Icon(Icons.chevron_right, size: 18),
