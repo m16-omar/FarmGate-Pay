@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dashboard_screen.dart'; // Reuses the existing real-time cooperative joint ledger screen!
 import 'notifications_screen.dart';
+import 'dashboard_screen.dart'; // Import real-time payout ledger screen
 import '../../../onboarding/presentation/screens/welcome_screen.dart';
 import '../../../onboarding/presentation/screens/role_selection_screen.dart';
 
@@ -20,9 +20,14 @@ class _CooperativeTabShellState extends State<CooperativeTabShell> {
   void initState() {
     super.initState();
     _pages = [
-      const CooperativeDashboardScreen(),
+      CooperativeDashboardScreen(onNavigate: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      }),
       const CooperativeMembersScreen(),
-      const DashboardScreen(), // The real-time Monnify payout ledger screen!
+      const CooperativeDeliveriesScreen(),
+      const CooperativeReportsScreen(),
       const CooperativeProfileScreen(),
     ];
   }
@@ -37,7 +42,7 @@ class _CooperativeTabShellState extends State<CooperativeTabShell> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFFE29A26), // Gold theme for cooperative
+        selectedItemColor: const Color(0xFF2E7D32), // Highlight active tab in green
         unselectedItemColor: Colors.grey,
         backgroundColor: Colors.white,
         elevation: 8,
@@ -50,19 +55,24 @@ class _CooperativeTabShellState extends State<CooperativeTabShell> {
         unselectedLabelStyle: const TextStyle(fontSize: 10),
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.group_work_outlined),
-            activeIcon: Icon(Icons.group_work),
-            label: 'Coop Hub',
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.people_outline),
             activeIcon: Icon(Icons.people),
-            label: 'Members',
+            label: 'Farmers',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long_outlined),
-            activeIcon: Icon(Icons.receipt_long),
-            label: 'Payout Ledger',
+            icon: Icon(Icons.local_shipping_outlined),
+            activeIcon: Icon(Icons.local_shipping),
+            label: 'Deliveries',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.analytics_outlined),
+            activeIcon: Icon(Icons.analytics),
+            label: 'Reports',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
@@ -76,371 +86,613 @@ class _CooperativeTabShellState extends State<CooperativeTabShell> {
 }
 
 // 1. Cooperative Dashboard Screen
-class CooperativeDashboardScreen extends StatefulWidget {
-  const CooperativeDashboardScreen({super.key});
+class CooperativeDashboardScreen extends StatelessWidget {
+  final Function(int) onNavigate;
+
+  const CooperativeDashboardScreen({super.key, required this.onNavigate});
 
   @override
-  State<CooperativeDashboardScreen> createState() => _CooperativeDashboardScreenState();
-}
-
-class _CooperativeDashboardScreenState extends State<CooperativeDashboardScreen> {
-  final List<Map<String, dynamic>> _topFarmers = [
-    {
-      'name': 'Musa',
-      'emoji': '👨🏾🌾',
-      'crop': 'Maize',
-      'performance': '₦2.4M Settled',
-      'status': 'Top Grower',
-    },
-    {
-      'name': 'Ngozi',
-      'emoji': '👩🏾🌾',
-      'crop': 'Rice',
-      'performance': '₦1.8M Settled',
-      'status': 'Top Grower',
-    },
-    {
-      'name': 'Abdullahi',
-      'emoji': '👨🏾🌾',
-      'crop': 'Groundnut',
-      'performance': '₦1.2M Settled',
-      'status': 'Active',
-    },
-  ];
-
-  final List<Map<String, dynamic>> _activities = [
-    {
-      'title': 'Farmer Registered',
-      'desc': 'Abu Sani joined Kaduna Coop',
-      'time': '10 mins ago',
-      'icon': Icons.person_add_alt_1_outlined,
-      'color': const Color(0xFF2E7D32),
-    },
-    {
-      'title': 'Settlement Completed',
-      'desc': '₦145,000 paid to Musa Haruna',
-      'time': '1 hour ago',
-      'icon': Icons.check_circle_outline,
-      'color': const Color(0xFFE29A26),
-    },
-    {
-      'title': 'Delivery Recorded',
-      'desc': '2.5 Tons of Maize logged',
-      'time': '2 hours ago',
-      'icon': Icons.local_shipping_outlined,
-      'color': const Color(0xFF2E7D32),
-    },
-  ];
-
-  void _showAddMemberDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Text('Register Cooperative Farmer'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: const [
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Full Name',
-                hintText: 'e.g., Abubakar Sani',
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFFAF7F0), // Soft Cream background
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await Future.delayed(const Duration(seconds: 1));
+          },
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            children: [
+              // Top Section
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          'Good Morning 👋',
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'Kaduna Farmers Cooperative',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF222222)),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'Manager: Ibrahim Musa',
+                          style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w600),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          '📍 Kaduna, Nigeria',
+                          style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: const Color(0xFFE2E2DF)),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.notifications_none, color: Color(0xFF222222)),
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen()));
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Active Crop Type',
-                hintText: 'e.g., Soybeans',
+              const SizedBox(height: 18),
+
+              // Hero Card
+              Container(
+                width: double.infinity,
+                height: 220,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.06),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    )
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Stack(
+                    children: [
+                      Container(color: const Color(0xFF1B3D22)), // Primary dark green base
+                      Positioned.fill(
+                        child: CustomPaint(
+                          painter: _CoopHeroPainter(), // Illustrates warehouse & farmers
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(18),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text(
+                                  'Today\'s Settlements',
+                                  style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  '₦8,450,000',
+                                  style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: const [
+                                    Text('Today\'s Deliveries', style: TextStyle(color: Colors.white60, fontSize: 9)),
+                                    SizedBox(height: 2),
+                                    Text('42', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                                const SizedBox(width: 32),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: const [
+                                    Text('Active Farmers', style: TextStyle(color: Colors.white60, fontSize: 9)),
+                                    SizedBox(height: 2),
+                                    Text('286', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () => onNavigate(3), // Swaps to Reports tab
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFD4A017), // Gold accent
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    elevation: 0,
+                                  ),
+                                  child: const Text('View Reports', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                                ),
+                                const SizedBox(width: 10),
+                                OutlinedButton(
+                                  onPressed: () => onNavigate(1), // Swaps to Farmers tab
+                                  style: OutlinedButton.styleFrom(
+                                    side: const BorderSide(color: Colors.white60),
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  ),
+                                  child: const Text('Manage Farmers', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(height: 18),
+
+              // Quick Actions
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildQuickActionCard('👨🏾🌾', 'Farmers', () => onNavigate(1)),
+                  _buildQuickActionCard('🚚', 'Deliveries', () => onNavigate(2)),
+                  _buildQuickActionCard('💰', 'Settlements', () => onNavigate(3)),
+                  _buildQuickActionCard('📊', 'Reports', () => onNavigate(3)),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Today's Overview
+              const Text(
+                'Today\'s Overview',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF222222)),
+              ),
+              const SizedBox(height: 12),
+              GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: 2.2,
+                children: [
+                  _buildOverviewCard('Total Farmers', '286', const Color(0xFFE8F5E9), const Color(0xFF2E7D32)),
+                  _buildOverviewCard('Active Today', '134', const Color(0xFFE3F2FD), const Color(0xFF1565C0)),
+                  _buildOverviewCard('Paid Today', '119', const Color(0xFFFFF8E1), const Color(0xFFD4A017)),
+                  _buildOverviewCard('Pending Payments', '15', const Color(0xFFFBE9E7), const Color(0xFFE75A1E)),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Deliveries Requiring Attention
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text(
+                    'Deliveries Requiring Attention',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF222222)),
+                  ),
+                  Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _buildAttentionDeliveryCard(
+                farmer: 'Musa Ibrahim',
+                crop: 'Maize',
+                cropEmoji: '🌽',
+                weight: '2,500 kg',
+                buyer: 'ABC Agro Ltd',
+                value: '₦1,125,000',
+                status: 'Awaiting Buyer Confirmation',
+                statusColor: const Color(0xFFE29A26),
+                progress: 0.75,
+              ),
+              const SizedBox(height: 12),
+              _buildAttentionDeliveryCard(
+                farmer: 'Amina Yusuf',
+                crop: 'Rice',
+                cropEmoji: '🌾',
+                weight: '1,800 kg',
+                buyer: 'Northern Foods Ltd',
+                value: '₦810,000',
+                status: 'Settlement Processing',
+                statusColor: const Color(0xFF1565C0),
+                progress: 0.50,
+              ),
+              const SizedBox(height: 24),
+
+              // Settlement Summary
+              const Text(
+                'Settlement Summary',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF222222)),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: const Color(0xFFE2E2DF)),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Today\'s Payments', style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 4),
+                          const Text('₦8,450,000', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF222222))),
+                          const SizedBox(height: 16),
+                          _buildSummaryRow('Completed', '₦7,980,000', const Color(0xFF2E7D32)),
+                          const SizedBox(height: 8),
+                          _buildSummaryRow('Pending', '₦470,000', const Color(0xFFE75A1E)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    SizedBox(
+                      width: 90,
+                      height: 90,
+                      child: CustomPaint(
+                        painter: _DoughnutChartPainter(),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Top Performing Farmers
+              const Text(
+                'Top Performing Farmers',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF222222)),
+              ),
+              const SizedBox(height: 12),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildPerformerCard('👨🏾🌾', 'Musa Ibrahim', '₦2.4M Earned', '12 Deliveries', '4.9 ⭐', 'Rank #1'),
+                    const SizedBox(width: 10),
+                    _buildPerformerCard('👩🏾🌾', 'Amina Yusuf', '₦1.8M Earned', '9 Deliveries', '4.8 ⭐', 'Rank #2'),
+                    const SizedBox(width: 10),
+                    _buildPerformerCard('👨🏾🌾', 'Abdullahi Bello', '₦1.5M Earned', '8 Deliveries', '4.7 ⭐', 'Rank #3'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Produce Summary
+              const Text(
+                'Produce Summary',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF222222)),
+              ),
+              const SizedBox(height: 12),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildProduceSummaryCard('🌽', 'Maize', '32 Tons'),
+                    const SizedBox(width: 10),
+                    _buildProduceSummaryCard('🌾', 'Rice', '18 Tons'),
+                    const SizedBox(width: 10),
+                    _buildProduceSummaryCard('🍅', 'Tomatoes', '10 Tons'),
+                    const SizedBox(width: 10),
+                    _buildProduceSummaryCard('🥜', 'Groundnut', '8 Tons'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Cooperative Performance
+              const Text(
+                'Cooperative Performance',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF222222)),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: const Color(0xFFE2E2DF)),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildPerformanceKPI('Monthly Settlement', '₦185M'),
+                        _buildPerformanceKPI('Deliveries Logged', '680'),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildPerformanceKPI('Avg. Settlement', '1m 38s'),
+                        _buildPerformanceKPI('Farmer Satisfaction', '98%'),
+                      ],
+                    ),
+                    const Divider(height: 24),
+                    SizedBox(
+                      height: 100,
+                      width: double.infinity,
+                      child: CustomPaint(
+                        painter: _PerformanceLineChartPainter(),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Recent Activities
+              const Text(
+                'Recent Activities',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF222222)),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: const Color(0xFFE2E2DF)),
+                ),
+                child: Column(
+                  children: [
+                    _buildActivityTimelineItem('✅', 'Musa Ibrahim received ₦450,000', '10 mins ago'),
+                    const Divider(height: 16),
+                    _buildActivityTimelineItem('🚚', 'Delivery Confirmed - Rice Delivery', '30 mins ago'),
+                    const Divider(height: 16),
+                    _buildActivityTimelineItem('👨🏾🌾', 'New Farmer Registered: Abu Sani', '1 hour ago'),
+                    const Divider(height: 16),
+                    _buildActivityTimelineItem('🏦', 'Buyer Funded Escrow Wallet (₦5M)', '2 hours ago'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Notifications
+              const Text(
+                'Cooperative Notices',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF222222)),
+              ),
+              const SizedBox(height: 12),
+              _buildNotificationBanner('📢', 'Meeting Reminder', 'Monthly cooperative meeting tomorrow at 10 AM.'),
+              const SizedBox(height: 10),
+              _buildNotificationBanner('⚠', 'Confirmation Pending', '15 Deliveries Awaiting Confirmation from Buyers.'),
+              const SizedBox(height: 10),
+              _buildNotificationBanner('💰', 'Settlement Completed', 'ABC Agro paid 12 farmers successfully.'),
+              const SizedBox(height: 24),
+
+              // Insights Section
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE3F2FD),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: const Color(0xFFBBDEFB)),
+                ),
+                child: Row(
+                  children: [
+                    const Text('📈', style: TextStyle(fontSize: 28)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text('Performance Insight', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF1565C0))),
+                          SizedBox(height: 4),
+                          Text(
+                            'This cooperative increased settlements by 24% compared to last week.',
+                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF1A237E)),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Promotional Banner
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF2E7D32), Color(0xFF1B5E20)],
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Grow Your Cooperative',
+                      style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Access financing, bulk purchasing, and digital tools to support more farmers.',
+                      style: TextStyle(color: Colors.white70, fontSize: 10),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD4A017),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        elevation: 0,
+                      ),
+                      child: const Text('Learn More →', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickActionCard(String emoji, String title, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 78,
+        height: 76,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: const Color(0xFFE2E2DF)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 22)),
+            const SizedBox(height: 6),
+            Text(title, style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: Color(0xFF222222))),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+      ),
+    );
+  }
+
+  Widget _buildOverviewCard(String label, String value, Color bg, Color textCol) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            value,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textCol),
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Farmer successfully registered into Kaduna Cooperative!'),
-                  backgroundColor: Color(0xFF2E7D32),
-                ),
-              );
-            },
-            child: const Text('Register', style: TextStyle(color: Color(0xFFE29A26), fontWeight: FontWeight.bold)),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 8.5, fontWeight: FontWeight.bold, color: Colors.black54),
           ),
         ],
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFBFBF9),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Kaduna Farmers Cooperative',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          'Cooperative Manager Hub',
-                          style: TextStyle(fontSize: 10, color: Color(0xFF888888), fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.notifications_none, color: Color(0xFF333333)),
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen()));
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            // Main Body
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: [
-                  // Joint Wallet Card (Hero: Today's Settlements)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF2E7D32), Color(0xFFE29A26)], // Green + Gold gradient for Coop role!
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFE29A26).withOpacity(0.2),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
-                        )
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            Text(
-                              'Today\'s Settlements',
-                              style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
-                            ),
-                            Icon(Icons.diversity_3, color: Colors.white70, size: 18),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          '₦4.2M',
-                          style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            ElevatedButton.icon(
-                              onPressed: _showAddMemberDialog,
-                              icon: const Icon(Icons.person_add, size: 14),
-                              label: const Text('Register Farmer', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: const Color(0xFF2E7D32),
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Three mini stats row (Active Farmers: 286, Today's Deliveries: 42, Pending: 6)
-                  Row(
-                    children: [
-                      _buildMiniStat('Active Farmers', '286', Icons.people_outline),
-                      const SizedBox(width: 8),
-                      _buildMiniStat('Today\'s Deliveries', '42', Icons.inventory_2_outlined),
-                      const SizedBox(width: 8),
-                      _buildMiniStat('Pending', '6', Icons.hourglass_empty_outlined),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Top Performing Farmers Header
-                  const Text(
-                    'Top Performing Farmers',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Top Performing Farmers List
-                  ..._topFarmers.map((f) => _buildFarmerCard(f)),
-                  const SizedBox(height: 24),
-
-                  // Recent Activities Header
-                  const Text(
-                    'Recent Activities',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Recent Activities Column
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFFE2E2DF)),
-                    ),
-                    child: Column(
-                      children: List.generate(_activities.length, (idx) {
-                        final act = _activities[idx];
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: idx == _activities.length - 1 ? 0 : 16.0),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: act['color'].withOpacity(0.08),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(act['icon'], color: act['color'], size: 18),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(act['title'], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                                    const SizedBox(height: 2),
-                                    Text(act['desc'], style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                                  ],
-                                ),
-                              ),
-                              Text(act['time'], style: const TextStyle(fontSize: 8.5, color: Colors.grey)),
-                            ],
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Monthly Earnings Header
-                  const Text(
-                    'Monthly Earnings',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Custom performance chart
-                  _buildPerformanceChart(),
-                  const SizedBox(height: 24),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMiniStat(String label, String val, IconData icon) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE2E2DF)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: const Color(0xFFE29A26), size: 18), // Gold color for icons
-            const SizedBox(height: 8),
-            Text(val, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
-            const SizedBox(height: 2),
-            Text(label, style: const TextStyle(fontSize: 8, color: Color(0xFF888888), fontWeight: FontWeight.bold)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFarmerCard(Map<String, dynamic> f) {
+  Widget _buildAttentionDeliveryCard({
+    required String farmer,
+    required String crop,
+    required String cropEmoji,
+    required String weight,
+    required String buyer,
+    required String value,
+    required String status,
+    required Color statusColor,
+    required double progress,
+  }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(color: const Color(0xFFE2E2DF)),
       ),
-      child: Row(
+      child: Column(
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: const BoxDecoration(
-              color: Color(0xFFF7F7F5),
-              shape: BoxShape.circle,
-            ),
-            child: Center(child: Text(f['emoji'], style: const TextStyle(fontSize: 20))),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(f['name'], style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 2),
-                Text('Crop: ${f['crop']}', style: const TextStyle(fontSize: 10, color: Color(0xFF777777))),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(f['performance'], style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
-              const SizedBox(height: 4),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE8F5E9),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  f['status'],
-                  style: const TextStyle(fontSize: 7.5, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32)),
+                width: 42,
+                height: 42,
+                decoration: const BoxDecoration(color: Color(0xFFFAF7F0), shape: BoxShape.circle),
+                child: const Center(child: Text('👨🏾🌾', style: TextStyle(fontSize: 20))),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(farmer, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 2),
+                    Text('$cropEmoji $crop • Weight: $weight', style: const TextStyle(fontSize: 9.5, color: Colors.grey)),
+                    const SizedBox(height: 1),
+                    Text('Buyer: $buyer', style: const TextStyle(fontSize: 9.5, color: Colors.grey)),
+                  ],
                 ),
               ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: statusColor.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      status,
+                      style: TextStyle(fontSize: 7.5, fontWeight: FontWeight.bold, color: statusColor),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+          const Divider(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Text('Settlement Progress: ', style: TextStyle(fontSize: 8.5, color: Colors.grey)),
+                  Text('${(progress * 100).toInt()}%', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.bold, color: statusColor)),
+                ],
+              ),
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2E7D32),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  minimumSize: Size.zero,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                ),
+                child: const Text('View →', style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold)),
+              )
             ],
           )
         ],
@@ -448,56 +700,115 @@ class _CooperativeDashboardScreenState extends State<CooperativeDashboardScreen>
     );
   }
 
-  Widget _buildPerformanceChart() {
-    final months = ['May', 'Jun', 'Jul', 'Aug'];
-    final settlements = [1.8, 2.9, 4.2, 5.5];
+  Widget _buildSummaryRow(String label, String val, Color dotCol) {
+    return Row(
+      children: [
+        Container(width: 8, height: 8, decoration: BoxDecoration(color: dotCol, shape: BoxShape.circle)),
+        const SizedBox(width: 8),
+        Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.w600)),
+        const Spacer(),
+        Text(val, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF222222))),
+      ],
+    );
+  }
 
+  Widget _buildPerformerCard(String emoji, String name, String earned, String deliveries, String rating, String rank) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      width: 125,
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE2E2DF)),
       ),
       child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(rank, style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Color(0xFFD4A017))),
+              Text(rating, style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.grey)),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(emoji, style: const TextStyle(fontSize: 22)),
+          const SizedBox(height: 6),
+          Text(name, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Text(earned, style: const TextStyle(fontSize: 10, color: Color(0xFF2E7D32), fontWeight: FontWeight.bold)),
+          Text(deliveries, style: const TextStyle(fontSize: 8, color: Colors.grey)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProduceSummaryCard(String emoji, String crop, String weight) {
+    return Container(
+      width: 80,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E2DF)),
+      ),
+      child: Column(
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 20)),
+          const SizedBox(height: 4),
+          Text(crop, style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 2),
+          Text(weight, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPerformanceKPI(String label, String val) {
+    return Expanded(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Total Settlements Logged (₦ Millions)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey)),
-          const SizedBox(height: 20),
-          SizedBox(
-            height: 120,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: List.generate(months.length, (idx) {
-                double val = settlements[idx];
-                double max = settlements.reduce((curr, next) => curr > next ? curr : next);
-                double pct = val / max;
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text('₦${val}M', style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
-                    const SizedBox(height: 6),
-                    Container(
-                      width: 32,
-                      height: 80 * pct,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Color(0xFF2E7D32), Color(0xFFE29A26)], // Green + Gold theme bars!
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                        ),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(6),
-                          topRight: Radius.circular(6),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(months[idx], style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
-                  ],
-                );
-              }),
+          Text(label, style: const TextStyle(fontSize: 8, color: Colors.grey, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 2),
+          Text(val, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActivityTimelineItem(String iconEmoji, String detail, String time) {
+    return Row(
+      children: [
+        Text(iconEmoji, style: const TextStyle(fontSize: 16)),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(detail, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF222222)))),
+        Text(time, style: const TextStyle(fontSize: 8.5, color: Colors.grey)),
+      ],
+    );
+  }
+
+  Widget _buildNotificationBanner(String emoji, String title, String subtitle) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E2DF)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 18)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: Color(0xFF222222))),
+                const SizedBox(height: 2),
+                Text(subtitle, style: const TextStyle(fontSize: 9, color: Colors.grey)),
+              ],
             ),
           )
         ],
@@ -513,7 +824,7 @@ class CooperativeMembersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFBFBF9),
+      backgroundColor: const Color(0xFFFAF7F0),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -527,9 +838,9 @@ class CooperativeMembersScreen extends StatelessWidget {
               Expanded(
                 child: ListView(
                   children: [
-                    _buildMemberListItem('Musa Haruna', 'Maize', '2.5 Acres', 'Active', 'Kaduna'),
-                    _buildMemberListItem('Ibrahim Bello', 'Rice', '1.8 Acres', 'Active', 'Kaduna'),
-                    _buildMemberListItem('Fatima Umar', 'Tomato', '0.5 Acres', 'Active', 'Kaduna'),
+                    _buildMemberListItem('Musa Ibrahim', 'Maize', '2.5 Acres', 'Active', 'Kaduna'),
+                    _buildMemberListItem('Amina Yusuf', 'Rice', '1.8 Acres', 'Active', 'Kaduna'),
+                    _buildMemberListItem('Abdullahi Bello', 'Tomato', '0.5 Acres', 'Active', 'Kaduna'),
                     _buildMemberListItem('Abubakar Sani', 'Soybeans', '3.0 Acres', 'Pending', 'Zaria'),
                   ],
                 ),
@@ -582,14 +893,104 @@ class CooperativeMembersScreen extends StatelessWidget {
   }
 }
 
-// 4. Cooperative Profile Screen
+// 3. Cooperative Deliveries Screen (Monnify Ledger integrations)
+class CooperativeDeliveriesScreen extends StatelessWidget {
+  const CooperativeDeliveriesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const DashboardScreen(); // Connects directly to real-time Monnify payout ledger!
+  }
+}
+
+// 4. Cooperative Reports Screen
+class CooperativeReportsScreen extends StatelessWidget {
+  const CooperativeReportsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFFAF7F0),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Cooperative Analytics & Reports', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 2),
+              const Text('Track settlement volumes and farmer performance metrics', style: TextStyle(fontSize: 11, color: Colors.grey)),
+              const SizedBox(height: 20),
+              
+              // Settlement Summary Doughnut Chart
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE2E2DF)),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text('Completed Volume', style: TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.bold)),
+                          Text('₦7,980,000', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 12),
+                          Text('Pending Volume', style: TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.bold)),
+                          Text('₦470,000', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.orange)),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: CustomPaint(painter: _DoughnutChartPainter()),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Performance Line Graph Card
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE2E2DF)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Total Settled Volume Trend', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 120,
+                      width: double.infinity,
+                      child: CustomPaint(painter: _PerformanceLineChartPainter()),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// 5. Cooperative Profile Screen
 class CooperativeProfileScreen extends StatelessWidget {
   const CooperativeProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFBFBF9),
+      backgroundColor: const Color(0xFFFAF7F0),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -599,8 +1000,8 @@ class CooperativeProfileScreen extends StatelessWidget {
               const SizedBox(height: 16),
               const CircleAvatar(
                 radius: 36,
-                backgroundColor: Color(0xFFFFF8E1), // Light gold/amber background
-                child: Icon(Icons.handshake, color: Color(0xFFE29A26), size: 36), // Gold icon
+                backgroundColor: Color(0xFFFFF8E1),
+                child: Icon(Icons.handshake, color: Color(0xFFE29A26), size: 36),
               ),
               const SizedBox(height: 12),
               const Text('Kaduna Farmers Cooperative', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -617,7 +1018,7 @@ class CooperativeProfileScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.swap_horiz, color: Color(0xFFE29A26)),
+                      leading: const Icon(Icons.swap_horiz, color: Color(0xFF2E7D32)),
                       title: const Text('Switch Active Role', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                       subtitle: const Text('Swap to Farmer or Buyer persona', style: TextStyle(fontSize: 10)),
                       trailing: const Icon(Icons.chevron_right, size: 18),
@@ -631,7 +1032,7 @@ class CooperativeProfileScreen extends StatelessWidget {
                     ),
                     const Divider(height: 1, color: Color(0xFFF1F1EF)),
                     ListTile(
-                      leading: const Icon(Icons.group_outlined, color: Color(0xFFE29A26)),
+                      leading: const Icon(Icons.group_outlined, color: Color(0xFF2E7D32)),
                       title: const Text('Manage Joint Sub-Ledgers', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                       subtitle: const Text('Verify farmer payout Monnify contracts', style: TextStyle(fontSize: 10)),
                       trailing: const Icon(Icons.chevron_right, size: 18),
@@ -656,4 +1057,178 @@ class CooperativeProfileScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+// Custom Painter for Cooperative warehouse & farmers illustration on the hero card
+class _CoopHeroPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    // Draw background hills
+    final hillPaint = Paint()
+      ..color = const Color(0xFF14301B)
+      ..style = PaintingStyle.fill;
+    
+    final path1 = Path()
+      ..moveTo(0, h)
+      ..quadraticBezierTo(w * 0.3, h * 0.6, w * 0.6, h * 0.8)
+      ..quadraticBezierTo(w * 0.8, h * 0.9, w, h * 0.7)
+      ..lineTo(w, h)
+      ..close();
+    canvas.drawPath(path1, hillPaint);
+
+    final hillPaint2 = Paint()
+      ..color = const Color(0xFF0F2615)
+      ..style = PaintingStyle.fill;
+    final path2 = Path()
+      ..moveTo(0, h)
+      ..quadraticBezierTo(w * 0.4, h * 0.75, w * 0.7, h * 0.65)
+      ..quadraticBezierTo(w * 0.85, h * 0.6, w, h * 0.5)
+      ..lineTo(w, h)
+      ..close();
+    canvas.drawPath(path2, hillPaint2);
+
+    // Draw a premium warehouse/grain silo dome illustration in gold on the right
+    final warehousePaint = Paint()
+      ..color = const Color(0xFFD4A017).withOpacity(0.3)
+      ..style = PaintingStyle.fill;
+    
+    // Warehouse base dome
+    canvas.drawRect(Rect.fromLTRB(w * 0.72, h * 0.45, w * 0.92, h * 0.78), warehousePaint);
+    
+    final roofPaint = Paint()
+      ..color = const Color(0xFFD4A017).withOpacity(0.5)
+      ..style = PaintingStyle.fill;
+    canvas.drawArc(
+      Rect.fromLTRB(w * 0.70, h * 0.32, w * 0.94, h * 0.58),
+      3.14, 3.14, true, roofPaint,
+    );
+
+    // Wheat stems in foreground
+    final wheatPaint = Paint()
+      ..color = const Color(0xFFD4A017)
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+    
+    canvas.drawLine(Offset(w * 0.75, h), Offset(w * 0.72, h * 0.75), wheatPaint);
+    canvas.drawLine(Offset(w * 0.78, h), Offset(w * 0.76, h * 0.72), wheatPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// Custom Painter for clean Settlement Doughnut Chart
+class _DoughnutChartPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+    final strokeWidth = size.width * 0.22;
+    
+    final rect = Rect.fromCircle(center: center, radius: radius - (strokeWidth / 2));
+    
+    // Completed arc (Gold/Green representation)
+    final completedPaint = Paint()
+      ..color = const Color(0xFF2E7D32)
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    // Completed: 94.4% (completed: ₦7.98M / total: ₦8.45M)
+    const completedAngle = 3.14 * 2 * 0.944;
+    canvas.drawArc(rect, -3.14 / 2, completedAngle, false, completedPaint);
+    
+    // Pending arc (Orange)
+    final pendingPaint = Paint()
+      ..color = const Color(0xFFE75A1E)
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+      
+    canvas.drawArc(rect, -3.14 / 2 + completedAngle, 3.14 * 2 - completedAngle, false, pendingPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// Custom Painter for Cooperative analytics line graph
+class _PerformanceLineChartPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    // Horizontal guide line
+    final gridPaint = Paint()
+      ..color = const Color(0xFFEDE8E0)
+      ..strokeWidth = 0.8;
+    canvas.drawLine(Offset(0, h * 0.5), Offset(w, h * 0.5), gridPaint);
+
+    final points = [
+      Offset(w * 0.05, h * 0.8),
+      Offset(w * 0.20, h * 0.65),
+      Offset(w * 0.35, h * 0.7),
+      Offset(w * 0.50, h * 0.5),
+      Offset(w * 0.65, h * 0.55),
+      Offset(w * 0.80, h * 0.35),
+      Offset(w * 0.95, h * 0.25),
+    ];
+
+    // Chart line
+    final linePaint = Paint()
+      ..color = const Color(0xFF2E7D32)
+      ..strokeWidth = 2.0
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path()..moveTo(points[0].dx, points[0].dy);
+    for (int i = 1; i < points.length; i++) {
+      path.lineTo(points[i].dx, points[i].dy);
+    }
+    canvas.drawPath(path, linePaint);
+
+    // Gradient fill under chart line
+    final areaPath = Path()
+      ..moveTo(points[0].dx, points[0].dy);
+    for (int i = 1; i < points.length; i++) {
+      areaPath.lineTo(points[i].dx, points[i].dy);
+    }
+    areaPath.lineTo(points.last.dx, h);
+    areaPath.lineTo(points.first.dx, h);
+    areaPath.close();
+
+    final gradientPaint = Paint()
+      ..shader = LinearGradient(
+        colors: [
+          const Color(0xFF2E7D32).withOpacity(0.18),
+          const Color(0xFF2E7D32).withOpacity(0.0),
+        ],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ).createShader(Rect.fromLTRB(0, 0, w, h))
+      ..style = PaintingStyle.fill;
+
+    canvas.drawPath(areaPath, gradientPaint);
+
+    // Nodes
+    final dotPaint = Paint()
+      ..color = const Color(0xFF2E7D32)
+      ..style = PaintingStyle.fill;
+    final dotOutlinePaint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
+
+    for (var pt in points) {
+      canvas.drawCircle(pt, 3.0, dotPaint);
+      canvas.drawCircle(pt, 3.0, dotOutlinePaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
