@@ -91,7 +91,7 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
       'crop': 'Maize',
       'emoji': '🌽',
       'farmer': 'Musa',
-      'weight': '2500kg',
+      'weight': '2,500 kg',
       'amount': 875000,
       'status': 'ESCROW',
       'date': 'Today, 08:30 AM',
@@ -101,10 +101,37 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
       'crop': 'Rice',
       'emoji': '🌾',
       'farmer': 'Ngozi',
-      'weight': '1800kg',
+      'weight': '1,800 kg',
       'amount': 630000,
       'status': 'ESCROW',
       'date': 'Today, 09:15 AM',
+    },
+  ];
+
+  final List<Map<String, dynamic>> _farmerOffers = [
+    {
+      'crop': 'White Maize',
+      'emoji': '🌽',
+      'farmer': 'Musa Haruna',
+      'available': 5000,
+      'price': 450,
+      'rating': '4.9 ⭐',
+    },
+    {
+      'crop': 'Parboiled Rice',
+      'emoji': '🌾',
+      'farmer': 'Amina Yusuf',
+      'available': 3500,
+      'price': 480,
+      'rating': '4.8 ⭐',
+    },
+    {
+      'crop': 'Raw Groundnuts',
+      'emoji': '🥜',
+      'farmer': 'Fatima Umar',
+      'available': 2000,
+      'price': 600,
+      'rating': '4.7 ⭐',
     },
   ];
 
@@ -139,6 +166,99 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
             child: const Text('Confirm Delivery', style: TextStyle(color: Color(0xFF1565C0), fontWeight: FontWeight.bold)),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showPurchaseOfferDialog(Map<String, dynamic> offer) {
+    final qtyController = TextEditingController(text: offer['available'].toString());
+    double totalCost = offer['available'] * offer['price'];
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Row(
+            children: [
+              Text('${offer['emoji']} Purchase ${offer['crop']}'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Farmer: ${offer['farmer']} • ${offer['rating']}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              const SizedBox(height: 12),
+              Text('Unit Price: ₦${offer['price']}/kg', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: qtyController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Sourcing Quantity (kg)',
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (val) {
+                  double qty = double.tryParse(val) ?? 0.0;
+                  setDialogState(() {
+                    totalCost = qty * offer['price'];
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
+              const Text('Calculated Settlement Cost:', style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+              Text(
+                '₦${totalCost.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1565C0)),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                double qty = double.tryParse(qtyController.text) ?? 0.0;
+                if (qty <= 0) return;
+                
+                if (totalCost > _escrowBalance) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Insufficient wallet balance to place purchase escrow!'), backgroundColor: Colors.red),
+                  );
+                  Navigator.pop(context);
+                  return;
+                }
+
+                Navigator.pop(context);
+                setState(() {
+                  _deliveries.insert(0, {
+                    'id': _deliveries.length + 1,
+                    'crop': offer['crop'],
+                    'emoji': offer['emoji'],
+                    'farmer': offer['farmer'].toString().split(' ').first,
+                    'weight': '${qty.toStringAsFixed(0)} kg',
+                    'amount': totalCost,
+                    'status': 'ESCROW',
+                    'date': 'Just now',
+                  });
+                  // Note: Escrow balance is updated when buyer confirms delivery and releases funds
+                });
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Sourcing contract created! ₦${totalCost.toStringAsFixed(0)} placed in Escrow.'),
+                    backgroundColor: const Color(0xFF2E7D32),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2E7D32)),
+              child: const Text('Fund Escrow & Purchase', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -229,11 +349,11 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
                             ElevatedButton.icon(
                               onPressed: () {
                                 setState(() {
-                                  _escrowBalance += 1000000;
+                                  _escrowBalance += 5000000;
                                 });
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Wallet successfully funded with ₦1,000,000!'),
+                                    content: Text('Wallet successfully funded with ₦5,000,000!'),
                                     backgroundColor: Color(0xFF2E7D32),
                                   ),
                                 );
@@ -266,9 +386,68 @@ class _BuyerDashboardScreenState extends State<BuyerDashboardScreen> {
                   ),
                   const SizedBox(height: 24),
 
+                  // Farmer Offers Listings Header
+                  const Text(
+                    'Active Farmer Listings (Marketplace)',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Farmer Offers List
+                  ...List.generate(_farmerOffers.length, (idx) {
+                    final offer = _farmerOffers[idx];
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: const Color(0xFFE2E2DF)),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFFAF7F0),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(child: Text(offer['emoji'], style: const TextStyle(fontSize: 22))),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(offer['crop'], style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 2),
+                                Text('Farmer: ${offer['farmer']} • ${offer['rating']}', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                                const SizedBox(height: 2),
+                                Text('Available: ${offer['available']} kg • ₦${offer['price']}/kg', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+                              ],
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () => _showPurchaseOfferDialog(offer),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF1565C0), // Sourcing / Buy Blue
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            ),
+                            child: const Text('Buy Now', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                          )
+                        ],
+                      ),
+                    );
+                  }),
+                  const SizedBox(height: 24),
+
                   // Pending Deliveries Header
                   const Text(
-                    'Pending Deliveries',
+                    'Pending Deliveries (Sourcing Escrow)',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
                   ),
                   const SizedBox(height: 12),
