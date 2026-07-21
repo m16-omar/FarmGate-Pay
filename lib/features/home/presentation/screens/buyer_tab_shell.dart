@@ -1719,7 +1719,7 @@ class BuyerConfirmationsScreen extends StatelessWidget {
   }
 }
 
-// 4. Buyer Wallet Screen
+// 4. Buyer Wallet Screen (Redesigned matching mockup)
 class BuyerWalletScreen extends StatefulWidget {
   const BuyerWalletScreen({super.key});
 
@@ -1728,96 +1728,504 @@ class BuyerWalletScreen extends StatefulWidget {
 }
 
 class _BuyerWalletScreenState extends State<BuyerWalletScreen> {
-  double _walletBalance = 18500000;
+  double _availableBalance = 1250000;
+  double _ledgerBalance = 1320000;
+  bool _obscureBalance = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFBFBF9),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Escrow Procurement Wallet', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 2),
-              const Text('Fund contracts and track settlements in escrow', style: TextStyle(fontSize: 11, color: Colors.grey)),
-              const SizedBox(height: 20),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF2E7D32), Color(0xFF1565C0)],
+        child: Column(
+          children: [
+            // Header (My Wallet, Hamburger, Bell, Avatar)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Color(0xFF333333)),
+                    onPressed: () {},
                   ),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Wallet Balance', style: TextStyle(color: Colors.white70, fontSize: 11)),
-                    const SizedBox(height: 6),
-                    Text(
-                      '₦${_walletBalance.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}',
-                      style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'My Wallet',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF333333)),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'Manage your balance and payments',
+                          style: TextStyle(fontSize: 11, color: Color(0xFF888888), fontWeight: FontWeight.w500),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          _walletBalance += 5000000;
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Successfully funded ₦5,000,000!'), backgroundColor: Color(0xFF2E7D32)),
-                        );
-                      },
-                      icon: const Icon(Icons.add, size: 14),
-                      label: const Text('Fund Escrow Wallet', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFF2E7D32),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        elevation: 0,
+                  ),
+                  Stack(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.notifications_none, color: Color(0xFF333333)),
+                        onPressed: () {},
                       ),
-                    )
-                  ],
-                ),
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.orange,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Text(
+                            '3',
+                            style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Color(0xFFE3F2FD),
+                    child: Text('👨🏾', style: TextStyle(fontSize: 16)),
+                  ),
+                ],
               ),
-              const SizedBox(height: 24),
-              const Text('Transaction Activity', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFE2E2DF)),
-                ),
-                child: Column(
-                  children: [
-                    _buildTxRow('Payment Sent', 'Northern Foods Ltd', '-₦540,000', 'Success', 'Today'),
-                    const Divider(height: 1),
-                    _buildTxRow('Escrow Funded', 'Monnify Payout Node', '+₦5,000,000', 'Success', 'Yesterday'),
-                  ],
-                ),
-              )
-            ],
-          ),
+            ),
+
+            // Wallet content area
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                children: [
+                  // Available Balance + Auxiliary Balances Row
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Left available card
+                      Expanded(
+                        flex: 11,
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          height: 180,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF1B5E20), Color(0xFF2E7D32)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Text('Available Balance', style: TextStyle(color: Colors.white70, fontSize: 10.5, fontWeight: FontWeight.bold)),
+                                      const SizedBox(width: 6),
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _obscureBalance = !_obscureBalance;
+                                          });
+                                        },
+                                        child: Icon(
+                                          _obscureBalance ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                          color: Colors.white70,
+                                          size: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    _obscureBalance
+                                        ? '₦•••••••'
+                                        : '₦${_availableBalance.toStringAsFixed(2).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}',
+                                    style: const TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Ledger Balance: ₦${_ledgerBalance.toStringAsFixed(2).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}',
+                                        style: const TextStyle(color: Colors.white70, fontSize: 8.5),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      const Icon(Icons.info_outline, color: Colors.white70, size: 10),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton.icon(
+                                      onPressed: () {
+                                        setState(() {
+                                          _availableBalance += 500000;
+                                          _ledgerBalance += 500000;
+                                        });
+                                      },
+                                      icon: const Icon(Icons.add, size: 12),
+                                      label: const Text('Add Money', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.bold)),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: const Color(0xFF1B5E20),
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                        padding: const EdgeInsets.symmetric(vertical: 8),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: OutlinedButton.icon(
+                                      onPressed: () {},
+                                      icon: const Icon(Icons.send_outlined, size: 12, color: Colors.white),
+                                      label: const Text('Send Money', style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.bold, color: Colors.white)),
+                                      style: OutlinedButton.styleFrom(
+                                        side: const BorderSide(color: Colors.white60),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                        padding: const EdgeInsets.symmetric(vertical: 8),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // Right column balances
+                      Expanded(
+                        flex: 8,
+                        child: Column(
+                          children: [
+                            _buildMiniBalanceCard('On Hold', '₦70,000.00', Icons.access_time_outlined, const Color(0xFFFFF3E0), const Color(0xFFE65100)),
+                            const SizedBox(height: 6),
+                            _buildMiniBalanceCard('Pending Refunds', '₦45,000.00', Icons.sync_outlined, const Color(0xFFE3F2FD), const Color(0xFF1565C0)),
+                            const SizedBox(height: 6),
+                            _buildMiniBalanceCard('Credit Limit', '₦500,000.00', Icons.credit_card_outlined, const Color(0xFFE8F5E9), const Color(0xFF2E7D32)),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Quick Actions Row
+                  const Text('Quick Actions', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildQuickActionTile('Add Money', Icons.account_balance_wallet_outlined),
+                      _buildQuickActionTile('Send Money', Icons.send_outlined),
+                      _buildQuickActionTile('Bank Transfer', Icons.account_balance_outlined),
+                      _buildQuickActionTile('Pay Supplier', Icons.assignment_outlined),
+                      _buildQuickActionTile('Withdrawal', Icons.download_outlined),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // My Cards Section
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text('My Cards', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                      Text('Manage Cards >', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      // VISA Debit Card Widget
+                      Expanded(
+                        child: Container(
+                          height: 110,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF122C19), Color(0xFF1E4627)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // Chip illustration
+                                  Container(
+                                    width: 24,
+                                    height: 18,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFFD54F).withOpacity(0.8),
+                                      borderRadius: BorderRadius.circular(3),
+                                    ),
+                                  ),
+                                  const Text('VISA', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                                ],
+                              ),
+                              const Text(
+                                '**** **** **** 4242',
+                                style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 2),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Text('Abdullahi Musa', style: TextStyle(color: Colors.white70, fontSize: 9.5, fontWeight: FontWeight.bold)),
+                                  Text('Exp 12/26', style: TextStyle(color: Colors.white70, fontSize: 9.5)),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      // Add New Card Card
+                      Expanded(
+                        child: Container(
+                          height: 110,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: const Color(0xFFE2E2DF), style: BorderStyle.solid),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 28,
+                                height: 28,
+                                decoration: const BoxDecoration(color: Color(0xFFE8F5E9), shape: BoxShape.circle),
+                                child: const Center(child: Icon(Icons.add, color: Color(0xFF2E7D32), size: 16)),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Text('Add New Card', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                                    SizedBox(height: 2),
+                                    Text('Add a new card for faster payments', style: TextStyle(fontSize: 8, color: Colors.grey)),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Recent Transactions Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text('Recent Transactions', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+                      Text('View All >', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Transactions list
+                  _buildTxListItem('Payment Sent', 'To ABC Agro Ltd', 'May 11, 2024 • 4:30 PM', '-₦1,125,000.00', 'Debit', Colors.red, const Color(0xFFFBE9E7), Icons.arrow_downward_outlined, const Color(0xFFE8F5E9)),
+                  const SizedBox(height: 12),
+                  _buildTxListItem('Money Added', 'From GTBank • • • • 1234', 'May 10, 2024 • 10:15 AM', '+₦500,000.00', 'Credit', const Color(0xFF2E7D32), const Color(0xFFE8F5E9), Icons.arrow_upward_outlined, const Color(0xFFE8F5E9)),
+                  const SizedBox(height: 12),
+                  _buildTxListItem('Payment Sent', 'To Green Fields Ltd', 'May 9, 2024 • 2:20 PM', '-₦600,000.00', 'Debit', Colors.red, const Color(0xFFFBE9E7), Icons.arrow_downward_outlined, const Color(0xFFFFF3E0)),
+                  const SizedBox(height: 12),
+                  _buildTxListItem('Refund Received', 'From ABC Farms', 'May 8, 2024 • 9:45 AM', '+₦120,000.00', 'Credit', const Color(0xFF2E7D32), const Color(0xFFE8F5E9), Icons.arrow_upward_outlined, const Color(0xFFE8F5E9)),
+                  const SizedBox(height: 12),
+                  _buildTxListItem('Bank Transfer', 'To Access Bank • • • • 5678', 'May 7, 2024 • 1:30 PM', '-₦300,000.00', 'Debit', Colors.red, const Color(0xFFFBE9E7), Icons.account_balance_outlined, const Color(0xFFE3F2FD)),
+                  const SizedBox(height: 24),
+
+                  // Spending Summary Box
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFAF7F0),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFE2E2DF)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: const BoxDecoration(color: Color(0xFFE8F5E9), shape: BoxShape.circle),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(24),
+                            child: CustomPaint(
+                              painter: _WalletCardIllustrationPainter(),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Spending Summary', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold)),
+                              SizedBox(height: 2),
+                              Text(
+                                'You have spent ₦3,450,000.00 this month\n₦250,000.00 more than last month ↑',
+                                style: TextStyle(fontSize: 9.5, color: Colors.grey, fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        OutlinedButton(
+                          onPressed: () {},
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF2E7D32),
+                            side: const BorderSide(color: Color(0xFFE2E2DF)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          ),
+                          child: const Text('View Report', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold)),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildTxRow(String title, String details, String amt, String status, String date) {
-    Color valColor = amt.startsWith('+') ? const Color(0xFF2E7D32) : Colors.red;
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: amt.startsWith('+') ? const Color(0xFFE8F5E9) : const Color(0xFFFBE9E7),
-        child: Icon(amt.startsWith('+') ? Icons.add : Icons.remove, color: valColor, size: 18),
+  Widget _buildMiniBalanceCard(String title, String val, IconData icon, Color bg, Color iconCol) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE2E2DF)),
       ),
-      title: Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-      subtitle: Text('$details • $date', style: const TextStyle(fontSize: 9.5, color: Colors.grey)),
-      trailing: Text(amt, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: valColor)),
+      child: Row(
+        children: [
+          Container(
+            width: 22,
+            height: 22,
+            decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
+            child: Center(child: Icon(icon, color: iconCol, size: 12)),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 7.5, color: Colors.grey, fontWeight: FontWeight.bold)),
+                Text(val, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right, size: 14, color: Colors.grey),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActionTile(String label, IconData icon) {
+    return Column(
+      children: [
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFE2E2DF)),
+          ),
+          child: Center(child: Icon(icon, color: const Color(0xFF2E7D32), size: 18)),
+        ),
+        const SizedBox(height: 6),
+        Text(label, style: const TextStyle(fontSize: 7.8, fontWeight: FontWeight.bold, color: Color(0xFF333333))),
+      ],
+    );
+  }
+
+  Widget _buildTxListItem(
+    String title,
+    String detail,
+    String time,
+    String amount,
+    String badgeText,
+    Color statusCol,
+    Color statusBg,
+    IconData icon,
+    Color circleBg,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E2DF)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(color: circleBg, shape: BoxShape.circle),
+            child: Center(child: Icon(icon, color: statusCol, size: 16)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold)),
+                Text(detail, style: const TextStyle(fontSize: 9.5, color: Colors.grey)),
+                Text(time, style: const TextStyle(fontSize: 8.5, color: Colors.grey)),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(color: statusBg, borderRadius: BorderRadius.circular(6)),
+                child: Text(badgeText, style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: statusCol)),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                amount,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: amount.startsWith('+') ? const Color(0xFF2E7D32) : const Color(0xFF333333),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 8),
+          const Icon(Icons.more_vert, color: Colors.grey, size: 18),
+        ],
+      ),
     );
   }
 }
@@ -2151,4 +2559,38 @@ class _YamCardPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+// Custom Painter to draw a wallet with gold coins illustration
+class _WalletCardIllustrationPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    // Draw dark green wallet base
+    final walletPaint = Paint()
+      ..color = const Color(0xFF1B5E20)
+      ..style = PaintingStyle.fill;
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTB(w * 0.15, h * 0.35, w * 0.85, h * 0.85), const Radius.circular(8)), walletPaint);
+
+    // Draw gold coin circle 1
+    final coinPaint = Paint()
+      ..color = const Color(0xFFFFD54F)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(Offset(w * 0.38, h * 0.28), 6, coinPaint);
+
+    // Draw gold coin circle 2
+    canvas.drawCircle(Offset(w * 0.58, h * 0.22), 7, coinPaint);
+
+    // Draw wallet clasp flap in gold
+    final claspPaint = Paint()
+      ..color = const Color(0xFFFFC107)
+      ..style = PaintingStyle.fill;
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTB(w * 0.72, h * 0.52, w * 0.90, h * 0.68), const Radius.circular(4)), claspPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
 
